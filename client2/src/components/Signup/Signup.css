@@ -1,0 +1,30 @@
+.signup-form{
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.heading{
+    font-size: xx-large;
+    font-weight: 900;
+    color: #024670;
+}
+
+.form-group{
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.signup-btn{
+    background-color: #207fba;
+    width: 400px;
+}
+
+.signup-btn:hover{
+    background-color: #36a9f0;
+    border-color: black;
+}

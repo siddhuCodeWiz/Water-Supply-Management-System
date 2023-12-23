@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .popup{
+            width: 400px;
+            background: #a9d8f7;
+            border-radius: 30px;
+            border: 2px solid black;
+            /* border: 2px #52bf97; */
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%,-50%) scale(0.1);
+            text-align: center;
+            padding: 0 30px 30px;
+            color: #333;
+            visibility: hidden;
+            transition: transform 0.4s, top 0.4s;
+        }
+
+        .open-popup{
+            visibility: visible;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button type="submit" class="btn" onclick="openpopup()">Press</button>
+        <div class="popup" id="popup" onclick="closepopup()">
+            <img src="" alt="">
+            <h2>jbiub</h2>
+            <p>Thank you</p>
+            <button>Close</button>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+
+
+    <script>
+        let trial = async () =>{
+             let popup = await document.getElementById("popup");
+
+            function openpopup(){
+                popup.classList.add("open-popup");
+            }
+
+            function closepopup(){
+                popup.classList.remove("open-popup");
+            }
+
+        }
+    </script>
+</body>
+</html>

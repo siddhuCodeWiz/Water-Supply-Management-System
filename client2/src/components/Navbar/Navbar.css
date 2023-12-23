@@ -1,0 +1,100 @@
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    background-color: #022a43;
+}
+
+.logo{
+    text-decoration: none;
+    font-size: xx-large;
+    color: #36a9f0;
+    font-weight: 520;
+    margin-left: 20px;
+}
+
+.left-side{
+    display: flex;
+    justify-content:space-around;
+    margin-left: -700px;
+    width: max-content;
+    height: fit-content;
+    gap: 45px;
+    font-size:21px;
+    font-weight: 500;
+    color: #36a9f0;
+    /* border: 2px solid white; */
+}
+
+
+.left-side span {
+    font-size: inherit;
+    color: #36a9f0;
+    transition: color 0.4s ease; /* Add transition property */
+}
+
+.left-side span:hover {
+    color: #92cef3;
+}
+
+.right-side{
+    display: flex;
+    align-items: center;
+    /* border: 1px solid white; */
+    margin-right: 30px;
+    gap: 40px;
+}
+
+.btn{
+    width: 100px;
+    background-color: #207fba;
+    font-size:large;
+    font-weight: 500;
+    color: white;
+    border-radius: 5%;
+    padding: 10px;
+}
+
+.btn:hover{
+    background-color: #36a9f0;
+    color: white;
+}
+
+.profile{
+    color: #00ffff;
+    text-transform: capitalize;
+    font-size: large;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.4s ease;
+}
+
+.profile:hover{
+    color: #36a9f0;
+}
+
+.profile-icon{
+    font-size: 35px;
+}
+
+
+.login-btn{
+    width: max-content;
+    background-color: #207fba;
+    font-size:large;
+    font-weight: 500;
+    border-radius: 5%;
+    padding: 10px 20px;
+    margin: 7px 30px;
+    
+}
+
+.login-btn:hover{
+    background-color: #36a9f0
+}
+
+.login-btn-link{
+    text-decoration: none;
+    color: white;
+}
