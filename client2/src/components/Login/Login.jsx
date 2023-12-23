@@ -14,7 +14,7 @@ const LogIn = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3006/auth/login', {
+      const response = await axios.post('http://localhost:5001/auth/login', {
         username,
         password,
       });
@@ -23,7 +23,7 @@ const LogIn = () => {
         window.localStorage.setItem('userID', response.data.userID);
         navigate('/');
       } else {
-        setError('Invalid credentials. Please try again.');
+        alert('Invalid credentials. Please try again.');
       }
     } catch (err) {
       console.error(err);

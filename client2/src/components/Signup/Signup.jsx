@@ -44,21 +44,27 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
+// import {ToastContainer, toast} from 'react-toastify';
+// import 'client2/public/New Water Supply Project/node_modules/react-toastify/dist/ReactToastify.css';
 import './Signup.css';
 
 const Signup = () => {
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axios.post("http://localhost:3006/auth/register", {
-        username,  // Include the username in the request
+      const response = await axios.post("http://localhost:5001/auth/register", {
+        username,
+        phone,
+        email,
         password,
       });
-      alert("Registration completed! Login now");
+      alert(response.data.message);
     } catch (err) {
       console.error(err);
     }
@@ -75,6 +81,16 @@ const Signup = () => {
           placeholder="Enter your username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="phone">Phone Number</label>
+        <input
+          type="phone"
+          id="phone"
+          placeholder="Enter your phone number"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
         />
       </div>
       <div className="form-group">
