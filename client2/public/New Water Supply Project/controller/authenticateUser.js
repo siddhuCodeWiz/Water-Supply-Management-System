@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
     });
 
     if (user) {
-        return res.statuus(400).json({ 
+        return res.status(400).json({ 
             success: false,
             message: "User already exists!" 
         });
@@ -47,8 +47,8 @@ const loginUser = async (req, res) => {
         return res.json({ message: "Password is incorrect" });
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, "secret");
-    res.json({ token, userID: user._id, role: user.role });
+    const token = jwt.sign({ id: user._id, role: user.role, name: user.username }, "secret");
+    res.json({ token, userID: user._id, role: user.role, username: user.username });
 }
 
 

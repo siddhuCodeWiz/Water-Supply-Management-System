@@ -18,10 +18,20 @@ const ComplaintSchema = new Schema({
         type: Number,
         required: false
     },
-    complaint: {
+    subject: {
         type: String,
         required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    resolved: {
+        type: String,
+        default:"no",
+        required: false
     }
+
 }, { timestamps: true });
 
 const ComplaintModel = mongoose.model('complaints', ComplaintSchema);

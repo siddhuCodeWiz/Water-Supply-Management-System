@@ -13,6 +13,7 @@ import Createrecipe from "../../pages/createrecipe";
 function Navbar() {
   const [cookies, setCookies] = useCookies(["access_token"]);
   const user = cookies.access_token ? jwtDecode(cookies.access_token) : null;
+  // alert(JSON.stringify(user));
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -30,12 +31,18 @@ function Navbar() {
         {user ? (
           <>
             {user.role === "admin" && (
-              <div className="left-side">
-                <Link to="/createrecipe" className="nav-link">
-                  <span>Complaint</span>
+              <div className="left-side-admin">
+                <Link to="/complaint" className="nav-link">
+                  <span>Complaints</span>
                 </Link>
                 <Link to="/maps" className="nav-link">
                   <span>Maps</span>
+                </Link>
+                <Link to="/maps" className="nav-link">
+                  <span>Workers</span>
+                </Link>
+                <Link to="/maps" className="nav-link">
+                  <span>Requests</span>
                 </Link>
               </div>
             )}
@@ -48,8 +55,11 @@ function Navbar() {
             )}
             {user.role === "citizen" && (
               <div className="left-side">
-                <Link to="/createrecipe" className="nav-link">
+                <Link to="/complaint" className="nav-link">
                   <span>Complaint</span>
+                </Link>
+                <Link to="/your-connections" className="nav-link">
+                  <span>Your Connections</span>
                 </Link>
               </div>
             )}
@@ -63,6 +73,7 @@ function Navbar() {
               <div className="profile">
                 <HiMiniUserCircle className="profile-icon"/>
                 <span>{user.role}</span>
+                {/* <span>{user.name}</span> */}
               </div>
             </div>
             

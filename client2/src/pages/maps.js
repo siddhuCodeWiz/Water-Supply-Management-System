@@ -20,7 +20,7 @@ const Saved = () => {
 
   return (
     <>
-    <div >
+    <div style={{ marginTop: '100px', padding: '10px 20px',  }} >
     <iframe
         src="../New Water Supply Project/index2.html"
         width="100%"

@@ -1,8 +1,12 @@
-.navbar{
-    display: flex;
-    justify-content: space-between;
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     background-color: #022a43;
-}
+    
+    z-index: 1000; /* Make sure it's on top of other elements */
+  }
 
 .logo{
     text-decoration: none;
@@ -12,10 +16,38 @@
     margin-left: 20px;
 }
 
+.left-side-admin{
+    display: flex;
+    justify-content:space-around;
+    /* margin-right: 400px; */
+    margin-inline-start: -400px;
+    width: max-content;
+    height: fit-content;
+    gap: 45px;
+    font-size:21px;
+    font-weight: 500;
+    color: #36a9f0;
+    /* border: 2px solid white; */
+}
+
+
+.left-side-admin span {
+    font-size: inherit;
+    color: #36a9f0;
+    transition: color 0.4s ease; /* Add transition property */
+}
+
+.left-side-admin span:hover {
+    color: #92cef3;
+}
+
+
+
 .left-side{
     display: flex;
     justify-content:space-around;
-    margin-left: -700px;
+    /* margin-right: 400px; */
+    margin-inline-start: -600px;
     width: max-content;
     height: fit-content;
     gap: 45px;
