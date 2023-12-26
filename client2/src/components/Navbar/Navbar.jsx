@@ -48,6 +48,9 @@ function Navbar() {
             )}
             {user.role === "engineer" && (
               <div className="left-side">
+                <Link to="/complaint" className="nav-link">
+                  <span>Complaint</span>
+                </Link>
                 <Link to="/maps" className="nav-link">
                   <span>Maps</span>
                 </Link>

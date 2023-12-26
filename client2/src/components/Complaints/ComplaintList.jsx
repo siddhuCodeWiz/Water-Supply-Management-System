@@ -3,6 +3,9 @@ import axios from 'axios';
 import './complaint.css';
 import {jwtDecode} from "jwt-decode";
 import { useCookies } from "react-cookie";
+import { IoIosAlert } from "react-icons/io";
+import { Link, Outlet } from 'react-router-dom';
+
 const ComplaintsPage = () => {
     const [complaints, setComplaints] = useState([]);
     const [cookies, setCookies] = useCookies(["access_token"]);
@@ -11,7 +14,7 @@ const ComplaintsPage = () => {
     useEffect(() => {
         const fetchComplaints = async () => {
             try {
-                if(user.role=="admin" || user.role=="worker"){
+                if(user.role=="admin" || user.role=="engineer"){
                 const response = await axios.get('http://localhost:5001/complaints/getcomplaints');
                 setComplaints(response.data);
             }
@@ -30,7 +33,7 @@ const ComplaintsPage = () => {
     }, [user.role]);
     
     
-    if(user.role=="admin" || user.role=="worker"){
+    if(user.role=="admin" || user.role=="engineer"){
         return (
             <div className="complaints-container">
                 <h1>Complaints Received</h1>
@@ -60,7 +63,15 @@ const ComplaintsPage = () => {
         return (
             <div className="complaints-container">
                 <h1>Complaints Received</h1>
+                <Link to="raise-complaint">
+                <button className="request">Raise Complaint            <IoIosAlert className="icon"/>
+                    </button>
+                </Link>
                 <div>
+                <div>
+                    {/* Use Outlet here to render child routes */}
+                    <Outlet />
+                </div>
                     {Array.isArray(complaints) && complaints.length>0 ? (
                     
                     complaints.map((complaint, index) => (

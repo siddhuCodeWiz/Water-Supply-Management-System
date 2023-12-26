@@ -62,6 +62,7 @@ const searchConnection = async (req, res) => {
             res.status(201).json({
             success: false,
             message: "No connections found for user",
+            data:result,
             });
         } else {
             // Handle the case where 'result' is found

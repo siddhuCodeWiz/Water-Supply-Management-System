@@ -6,7 +6,7 @@ import { useCookies } from "react-cookie";
 import { IoAddCircleSharp } from "react-icons/io5";
 
 
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 function YourConnections(){
 
@@ -35,11 +35,15 @@ function YourConnections(){
     return (
         <div className="connection-container">
           <h1>Your connections</h1>
-          <Link to="request-connection">
+          <Link to="/your-connections/request-connection">
           <button className="request">Request Connection            <IoAddCircleSharp className="icon"/>
             </button>
           </Link>
-          {/* <p>{JSON.stringify(connections)}</p> */}
+          <div>
+        {/* Use Outlet here to render child routes */}
+        <Outlet />
+          </div>
+            {/* <p>{JSON.stringify(connections)}</p> */}
           <div>
             {connections.data ? (
               (
