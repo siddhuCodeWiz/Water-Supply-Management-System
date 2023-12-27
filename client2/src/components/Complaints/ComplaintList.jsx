@@ -16,7 +16,11 @@ const ComplaintsPage = () => {
             try {
                 if(user.role=="admin" || user.role=="engineer"){
                 const response = await axios.get('http://localhost:5001/complaints/getcomplaints');
-                setComplaints(response.data);
+                const allComplaints= response.data;
+                const unresolvedComplaints=allComplaints.filter(
+                    (complaint)=>complaint.resolved=='no'
+                );
+                setComplaints(unresolvedComplaints);
             }
             else if(user.role=="citizen"){
                 const response = await axios.post('http://localhost:5001/complaints/usercomplaint',{
@@ -31,8 +35,24 @@ const ComplaintsPage = () => {
         };
         fetchComplaints();
     }, [user.role]);
-    
-    
+    const handleYesClick = async (complaintId) => {
+        try {
+          await axios.put('http://localhost:5001/complaints/${complaintId}', {
+            resolved: 'yes',
+          });
+      
+          const updatedComplaints = complaints.filter(
+            (complaint) => complaint._id.toString() !== complaintId.toString()
+          );
+          setComplaints(updatedComplaints);
+        } catch (error) {
+          console.error('Error updating complaint status:', error);
+        }
+      };
+        
+      const handleNoClick = async (complaintId) => {
+        console.log("No action taken for complaint ID ${complaintId}");
+    };
     if(user.role=="admin" || user.role=="engineer"){
         return (
             <div className="complaints-container">
@@ -49,8 +69,8 @@ const ComplaintsPage = () => {
                             <span><strong>Description: </strong>{complaint.description}</span>
                             <span><strong>Problem is resolved?</strong></span>
                             <div className="buttons">
-                                <button >Yes</button>
-                                <button>No</button>
+                                <button onClick={()=>handleYesClick(complaint._id)}>Yes</button>
+                                <button onClick={()=>handleNoClick(complaint._id)}>No</button>
                             </div>
                         </div>
                     ))}
@@ -92,6 +112,11 @@ const ComplaintsPage = () => {
                 </div>
             </div>
         );
+    }
+    else{
+        return(
+            <h1>PAGE NOT FOUND!!</h1>
+        )
     }
     
 };

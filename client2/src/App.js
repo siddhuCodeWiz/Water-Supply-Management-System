@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route, Outlet} from "react-router-dom";
 import "./Home.css";
 // import "./auth.css"
 import Navbar from "./components/Navbar/Navbar";
-import Saved from "./pages/maps";
+// import Saved from "./pages/maps";
+import Saved from "./components/maps.js";
 // import Home from "./pages/Home";
 import Home from "./components/HomePage/Home.jsx";
 import YourConnections from "./components/YourConnections/YourConnections.jsx";
