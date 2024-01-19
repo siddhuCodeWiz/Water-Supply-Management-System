@@ -13,13 +13,33 @@ const pointSchema = new Schema({
         required: true
     },
     properties: {
-        name: String,
+        can_id: String,
+        major_Junction: String,
         description: String,
         supplied: String
     }
 });
 
 
-const pointModel = mongoose.model('points', pointSchema);
+const junctionSchema = new Schema({
+    type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point',
+        required: true
+    },
+    coordinates: {
+        type: [Number],
+        required: true
+    },
+    properties: {
+        unique_id:String,
+        supplied: String,
+    }
+});
 
-module.exports = pointModel;
+
+
+const pointModel = mongoose.model('points', pointSchema);
+const junctionModel = mongoose.model('junctions', junctionSchema);
+module.exports = {pointModel, junctionModel};

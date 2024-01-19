@@ -15,10 +15,11 @@ function Navbar() {
   const user = cookies.access_token ? jwtDecode(cookies.access_token) : null;
   // alert(JSON.stringify(user));
   const navigate = useNavigate();
-
+  // window.localStorage.setItem("role", user.role);
   const handleLogout = () => {
     setCookies("access_token", "");
     window.localStorage.removeItem("userID");
+    // window.localStorage.removeItem("role");
     navigate("/auth");
   };
 
@@ -38,11 +39,14 @@ function Navbar() {
                 <Link to="/maps" className="nav-link">
                   <span>Maps</span>
                 </Link>
-                <Link to="/maps" className="nav-link">
+                <Link to="/addworker" className="nav-link">
                   <span>Workers</span>
                 </Link>
-                <Link to="/maps" className="nav-link">
+                <Link to="/requests" className="nav-link">
                   <span>Requests</span>
+                </Link>
+                <Link to="/requests" className="nav-link">
+                  <span>Reports</span>
                 </Link>
               </div>
             )}
@@ -83,7 +87,7 @@ function Navbar() {
           </>
         ) : (
           <div >
-            <button className="login-btn">
+            <button className="login-btn" id="login-btnid">
             <Link to="/auth" className="login-btn-link">
             Login
           </Link>

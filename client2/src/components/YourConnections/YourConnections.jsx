@@ -18,9 +18,8 @@ function YourConnections(){
     useEffect(() => {
         const fetchConnections = async () => {
             try {
-            const response = await axios.post('http://localhost:5001/connection/searchuserconnection', {
-                name:user.name
-            });
+              const response = await axios.get(`http://localhost:5001/connection/searchuserconnection/${user.name}`);
+              // console.log('Response from server:', response.data);
             setConnections(response.data);
 
             } catch (error) {

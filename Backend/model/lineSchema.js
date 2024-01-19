@@ -13,9 +13,9 @@ const lineSchema = new Schema({
         required: true
     },
     properties: {
-        name: String,
-        description: String,
-        supplied: String
+        lineid: String,
+        major_Junction: String,
+        supplied: String,
     }
 })
 

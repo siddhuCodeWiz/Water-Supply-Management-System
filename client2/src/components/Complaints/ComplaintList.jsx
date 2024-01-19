@@ -5,16 +5,23 @@ import {jwtDecode} from "jwt-decode";
 import { useCookies } from "react-cookie";
 import { IoIosAlert } from "react-icons/io";
 import { Link, Outlet } from 'react-router-dom';
+import {getuserID} from '../../hooks/getuserID';
+import { useNavigate } from 'react-router-dom';
 
 const ComplaintsPage = () => {
     const [complaints, setComplaints] = useState([]);
     const [cookies, setCookies] = useCookies(["access_token"]);
     const user = cookies.access_token ? jwtDecode(cookies.access_token) : null;
-
+    const navigate = useNavigate;
+    const userId = getuserID();
+    // alert("Value: ",user.role)
+    if(userId==null){
+        navigate('/auth');
+    }
     useEffect(() => {
         const fetchComplaints = async () => {
             try {
-                if(user.role=="admin" || user.role=="engineer"){
+                if(user && (user.role=="admin" || user.role=="engineer")){
                 const response = await axios.get('http://localhost:5001/complaints/getcomplaints');
                 const allComplaints= response.data;
                 const unresolvedComplaints=allComplaints.filter(
@@ -22,7 +29,7 @@ const ComplaintsPage = () => {
                 );
                 setComplaints(unresolvedComplaints);
             }
-            else if(user.role=="citizen"){
+            else if(user && (user.role=="citizen")){
                 const response = await axios.post('http://localhost:5001/complaints/usercomplaint',{
                     "name":user.name
                 });
@@ -34,28 +41,45 @@ const ComplaintsPage = () => {
             }
         };
         fetchComplaints();
-    }, [user.role]);
+    }, []);
     const handleYesClick = async (complaintId) => {
+        // alert(complaintId);
+        complaintId = complaintId.toString();
+        console.log(complaintId);
         try {
-          await axios.put('http://localhost:5001/complaints/${complaintId}', {
-            resolved: 'yes',
+          const res = await axios.post(`http://localhost:5001/complaints/handlecomplaint`,{
+            _id:{complaintId}
           });
-      
-          const updatedComplaints = complaints.filter(
-            (complaint) => complaint._id.toString() !== complaintId.toString()
-          );
-          setComplaints(updatedComplaints);
+          if(res){
+            console.log(res);
+              const updatedComplaints = complaints.filter(
+                (complaint) => complaint._id.toString() !== complaintId.toString()
+            );
+            setComplaints(updatedComplaints);
+            console.log("updated");
+          }
+          else{
+            console.log("no");
+          }
+        
+          
         } catch (error) {
-          console.error('Error updating complaint status:', error);
+          console.error(`Error updating complaint status:`, error);
         }
       };
         
       const handleNoClick = async (complaintId) => {
-        console.log("No action taken for complaint ID ${complaintId}");
+        console.log(`No action taken for complaint ID ${complaintId}`);
     };
-    if(user.role=="admin" || user.role=="engineer"){
+
+    // const handleClick = () =>{
+    //     navigate("search-canid");
+    // }
+
+    if( user && (user.role=="admin" || user.role=="engineer")){
         return (
             <div className="complaints-container">
+                {/* {alert(user.role)} */}
                 <h1>Complaints Received</h1>
                 <div>
                     {Array.isArray(complaints) && complaints.map((complaint, index) => (
@@ -79,12 +103,12 @@ const ComplaintsPage = () => {
         );
     }
 
-    else if(user.role=="citizen"){
+    else if(user && (user.role=="citizen")){
         return (
             <div className="complaints-container">
                 <h1>Complaints Received</h1>
-                <Link to="raise-complaint">
-                <button className="request">Raise Complaint            <IoIosAlert className="icon"/>
+                <Link to="search-canid">
+                <button className="request" >Raise Complaint            <IoIosAlert className="icon"/>
                     </button>
                 </Link>
                 <div>
@@ -114,9 +138,14 @@ const ComplaintsPage = () => {
         );
     }
     else{
-        return(
-            <h1>PAGE NOT FOUND!!</h1>
-        )
+        // return(
+        //     <h1>PAGE NOT FOUND!!</h1>
+        // )
+        // alert("ju")
+        navigate("/auth", {replace: true})
+        // var button = document.getElementById("login-btnid");
+        // alert(button)
+        // button.click();
     }
     
 };

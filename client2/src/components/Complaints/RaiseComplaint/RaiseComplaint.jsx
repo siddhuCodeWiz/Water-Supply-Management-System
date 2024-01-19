@@ -5,14 +5,15 @@ import {jwtDecode} from "jwt-decode";
 import { useCookies } from "react-cookie";
 import './RaiseComplaint.css';
 
-const NewWaterConnection = () => {
+const RaiseComplaint = (props) => {
 
     const [connections, setConnections] = useState([]);
     const [cookies, setCookies] = useCookies(["access_token"]);
     const user = cookies.access_token ? jwtDecode(cookies.access_token) : null;
-
-
+    // const {canId} = props.location.state;
+    
     useEffect(() => {
+        alert(JSON.stringify(props))
         const fetchConnections = async () => {
             try {
             const response = await axios.post('http://localhost:5001/connection/searchuserconnection', {
@@ -31,31 +32,51 @@ const NewWaterConnection = () => {
     const [showModal, setShowModal] = useState(true);
     const [formData, setFormData] = useState({
         name: user.name,
-        address: '',
-        city: '',
-        pincode: '',
+        // canId: canId,
+        email: '',
+        mobile:'',
+        subject:'',
+        description:'',
     });
+    const [CanId, setCanId] = useState(null)
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        try{
-            console.log(formData);
-            const response = await axios.post("http://localhost:5001/connection/addconnection", formData)
-
-            setShowModal(false)
-            alert("Request for new connection successfully sent")
-            window.location.reload();
-
-        } catch(error){
+    
+        
+        console.log(formData);
+    
+        try {
+            
+            const response = await axios.post('http://localhost:5001/complaints/postcomplaint', formData);
+    
+           
+            console.log(response.data);
+    
+           
+            setShowModal(false);
+    
+           
+    
+        } catch (error) {
+            
             console.error("Error submitting form:", error);
-            alert("An unexpected error occurred");
+    
+            
+            if (error.response && error.response.status === 400) {
+                alert("Can Id not found");
+            } else {
+                
+                alert("An error occurred while submitting the complaint. Please try again.");
+            }
         }
     }
+    
 
     return (
         <div>
@@ -65,8 +86,8 @@ const NewWaterConnection = () => {
                     <div className="modal-content">
                         <span className="close" onClick={() => setShowModal(false)}><Link to="/complaint" className='close-icon'>&times;</Link></span>
                         {/* {alert(JSON.stringify(connections))} */}
-                        <h2 className="form-title">New Water Connection Request</h2>
-                        <form className="connection-form" onSubmit={handleSubmit}>
+                        <h2 className="form-title">Raise Complaint</h2>
+                        <form className="connection-form">
                             <input
                                 type="text"
                                 name="name"
@@ -77,31 +98,52 @@ const NewWaterConnection = () => {
                                 onChange={handleChange}
                                 className="input-field"
                             />
-                            <input
-                                type="address"
-                                name="address"
-                                placeholder="Address"
-                                value={formData.address}
+                            {/* <input
+                                type="text"
+                                name="canId"
+                                placeholder="Your CanID"
+                                value={canId}
+                                readOnly={true}
+                                disabled={true}
                                 onChange={handleChange}
                                 className="input-field"
-                            />
+                            /> */}
                             <input
                                 type="text"
-                                name="city"
-                                placeholder="City"
-                                value={formData.city}
+                                name="email"
+                                placeholder="email"
+                                value={formData.email}
                                 onChange={handleChange}
                                 className="input-field"
                             />
                             <input
                                 type="number"
-                                name="pincode"
-                                placeholder="Pincode"
-                                value={formData.pincode}
+                                name="mobile"
+                                placeholder="mobile"
+                                value={formData.mobile}
                                 onChange={handleChange}
                                 className="input-field"
                             />
-                            <button type="submit" className="submit-button">Submit Request</button>
+
+                            <input 
+                            type="text"
+                            name='subject'
+                            placeholder='subject'
+                            value={formData.subject}
+                            onChange={handleChange}
+                            className='input-field'
+                             />
+
+                            <input 
+                            type="text"
+                            name='description'
+                            placeholder='description'
+                            value={formData.description}
+                            onChange={handleChange}
+                            className='input-field'
+                             />
+
+                            <button type="submit" onClick={handleSubmit} className="submit-button">Submit Request</button>
                         </form>
                     </div>
                 </div>
@@ -110,4 +152,4 @@ const NewWaterConnection = () => {
     );
 };
 
-export default NewWaterConnection;
+export default RaiseComplaint;

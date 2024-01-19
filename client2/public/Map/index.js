@@ -9,7 +9,6 @@ var baseMaps ={
   'Street Map': streetMap
 }
 
-
 // *************************************************
 
 
@@ -71,44 +70,43 @@ var map = L.map('map', {
 // Adding the layers to the map
 var mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-// Showing a layer by importing the geoJSON file.
-// var water_resorces =$.getJSON("./resources/stanford_geojson.json" ,function(data){
-//   L.geoJSON(data).addTo(map);
-// })
 
-// var water_resorces =$.getJSON("./points.json" ,function(data){
-//   L.geoJSON(data).addTo(map);
-// })
-
-// $.getJSON('./lines.json', function (data) {
-//   L.geoJSON(data, {
-//     style: function (feature) {
-//       return {
-//         color: 'blue',  // Set the line color
-//         weight: 2        // Set the line weight
-//       };
-//     },
-//     onEachFeature: function (feature, layer) {
-//       layer.bindPopup(feature.properties.name);
-//     }
-//   }).addTo(map);
-// });
-
-// *********************************************************************
-// Retrieving points from database and displaying them on map
-
-
-function displayPointsOnMap(geojsonData) {
+function displayPointsOnMap(geojsonDataForPoints) {
   const data = [];
+  const junctiondata = {};
   var formattedFeature;
-  console.log(geojsonData);
+  // console.log(geojsonDataForPoints);
+  // alert(JSON.stringify(geojsonDataForPoints.pointsData[0].properties));
+  const fetchdata = async()=>{try {
+    const response1 = await fetch(`http://localhost:5001/api/getjunctiondata`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    const junctioninfo = await response1.json();
+    await junctioninfo.junctionData.forEach(element => {
+      junctiondata[element.properties.unique_id]=element.properties.supplied;
+    })
+    processjunctiondata();
+    if(!response1.ok){
+      console.log(`HTTP error! Status: ${response1.status}`);
+    }
+  
+  } catch (error) {
+    console.log(`Error fetching GeoJSON data: ${error}`);
+  } 
+  }
+  fetchdata();
+  function processjunctiondata(){
+  // alert(JSON.stringify(junctiondata));
+  geojsonDataForPoints["pointsData"].forEach(element => {
+    const canID = element && element.properties && element.properties.can_id;
+    // alert(canID);
+    var jid = element.properties.major_Junction;
+    var supplied = junctiondata[jid];
 
-  geojsonData["pointsData"].forEach(element => {
-    // Check if 'element' and 'element.properties' exist before accessing 'name'
-    const name = element && element.properties && element.properties.name;
-    var supplied = element.properties.supplied
-
-    if(supplied==="yes"){
+    if (element.properties.supplied=="yes" && supplied === "yes") {
       formattedFeature = {
         "type": "Feature",
         "geometry": {
@@ -116,18 +114,16 @@ function displayPointsOnMap(geojsonData) {
           "coordinates": element && element.coordinates
         },
         "properties": {
-          "name": name || "DefaultName",
+          "CAN_id": canID || "No ID",
           "icon": L.icon({
-            iconUrl: "./blue.png", // Change the path to your custom icon image
-            iconSize: [52, 52], // Set the size of your icon
-            iconAnchor: [16, 16], // Set the anchor point of your icon
+            iconUrl: "./blue.png",
+            iconSize: [52, 52],
+            iconAnchor: [16, 16],
           }),
           "supplied": element.properties.supplied,
         }
       };
-    }
-
-    else{
+    } else {
       formattedFeature = {
         "type": "Feature",
         "geometry": {
@@ -135,34 +131,121 @@ function displayPointsOnMap(geojsonData) {
           "coordinates": element && element.coordinates
         },
         "properties": {
-          "name": name || "DefaultName",
+          "CAN_id": canID || "No ID",
           "icon": L.icon({
-            iconUrl: "./red.png", // Change the path to your custom icon image
-            iconSize: [52, 52], // Set the size of your icon
-            iconAnchor: [16, 16], // Set the anchor point of your icon
+            iconUrl: "./red.png",
+            iconSize: [52, 52],
+            iconAnchor: [16, 16],
           }),
           "supplied": element.properties.supplied,
         }
       };
     }
-    
 
     data.push(formattedFeature);
   });
 
-  // Now 'data' array contains features in the desired format
   console.log(data);
 
   // Add GeoJSON layer to the map
-  L.geoJSON(data, {
+  const pointsLayer = L.geoJSON(data, {
     pointToLayer: function (feature, latlng) {
-      // Use the custom icon if available, otherwise, use the default icon
       const icon = feature.properties.icon || L.icon.default();
-      return L.marker(latlng, { icon: icon }).bindPopup(`<strong>Name:</strong> ${feature.properties.name}<br>` +
-      `<strong>Supplied:</strong> ${feature.properties.supplied}`);
+      const marker = L.marker(latlng, { icon: icon }).bindPopup(`<strong>CAN ID: </strong> ${feature.properties.CAN_id}<br>` +
+        `<strong>Supplied:</strong> ${feature.properties.supplied}`);
+
+      // Add double-click event listener to each marker
+      marker.on('dblclick', function () {
+        // Remove the clicked marker from the pointsLayer
+        pointsLayer.removeLayer(marker);
+      });
+
+      return marker;
     }
-  }).addTo(map);
+  });
+
+  // Add the pointsLayer to the overlayMaps control
+  overlayMaps["Points from Database"] = pointsLayer;
+
+  // Add the pointsLayer to the map
+  pointsLayer.addTo(map);
+
+  // Update the mapLayer control to include the new overlayMaps
+  mapLayer.remove();
+  mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
 }
+}
+
+
+
+
+
+
+// ********************************(Junction)**********************************
+function displayJunctionsOnMap(geojsonData) {
+  const data = [];
+  var formattedFeature;
+  // console.log(geojsonData);
+  // alert(JSON.stringify(geojsonData))
+
+  geojsonData["junctionData"].forEach(element => {
+    const uniqueJunction_id = element && element.properties && element.properties.
+    unique_id;
+    var supplied = element.properties.supplied;
+
+    formattedFeature = {
+      "type": "Feature",
+      "geometry": {
+        "type": element.type,
+        "coordinates": element && element.coordinates
+      },
+      "properties": {
+        "unique_id": uniqueJunction_id || "No Junction Name",
+        "icon": L.icon({
+          iconUrl: "./water-tank.png",
+          iconSize: [52, 52],
+          iconAnchor: [16, 16],
+        }),
+        "supplied": element.properties.supplied,
+      }
+    };
+    data.push(formattedFeature);
+  });
+
+  console.log(data);
+
+  // Add GeoJSON layer to the map
+  const pointsLayer = L.geoJSON(data, {
+    pointToLayer: function (feature, latlng) {
+      const icon = feature.properties.icon || L.icon.default();
+      const marker = L.marker(latlng, { icon: icon }).bindPopup(`<strong>Junction ID:</strong> ${feature.properties.
+        unique_id}<br>` +
+        `<strong>Supplied:</strong> ${feature.properties.supplied}`);
+
+      // Add double-click event listener to each marker
+      marker.on('dblclick', function () {
+        // Remove the clicked marker from the pointsLayer
+        pointsLayer.removeLayer(marker);
+        alert(marker);
+      });
+
+      return marker;
+    }
+  });
+
+  // Add the pointsLayer to the overlayMaps control
+  overlayMaps["Points from Database"] = pointsLayer;
+
+  // Add the pointsLayer to the map
+  pointsLayer.addTo(map);
+
+  // Update the mapLayer control to include the new overlayMaps
+  mapLayer.remove();
+  mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
+}
+
+// *****************************************************************************
+
 
 
 function displaylinesOnMap(geojsonData) {
@@ -170,43 +253,62 @@ function displaylinesOnMap(geojsonData) {
   console.log(geojsonData);
 
   geojsonData["linedata"].forEach(element => {
+    var formattedFeature;
     // Check if 'element' and 'element.properties' exist before accessing 'name'
-    const name = element && element.properties && element.properties.name;
-    const formattedFeature = {
+    const lineid = element && element.properties && element.properties.lineid;
+    formattedFeature = {
       "type": "Feature",
       "geometry": {
         "type": element.type,
         "coordinates": element && element.coordinates
       },
       "properties": {
-        "name": name || "default",
+        "lineid": lineid || "default",
+        "color": "red",
+        "supplied": element.properties.supplied,
       }
     };
-
     data.push(formattedFeature);
   });
 
   console.log(data);
 
   // Assuming 'data' contains your GeoJSON LineString or MultiLineString geometry
-  L.geoJSON(data, {
+  const linesLayer = L.geoJSON(data, {
     style: function (feature) {
-      return {
-        color: 'red',  // Set the color of the line
-        weight: 3,      // Set the weight or thickness of the line
-        opacity: 1      // Set the opacity of the line
-      };
+      if(feature.properties.supplied=="yes"){
+        return {
+          color: 'blue',  // Set the color of the line
+          weight: 4,      // Set the weight or thickness of the line
+          opacity: 1      // Set the opacity of the line
+        };
+      }
+      else{
+        return {
+          color: 'red',  // Set the color of the line
+          weight: 4,      // Set the weight or thickness of the line
+          opacity: 1      // Set the opacity of the line
+        };
+      }
     },
     onEachFeature: function (feature, layer) {
       // You can add popup or other interactions here if needed
       // layer.bindPopup(feature.properties.name);
-      layer.bindPopup(`<strong>Name:</strong> ${feature.properties.name}<br>` +
+      layer.bindPopup(`<strong>Line ID:</strong> ${feature.properties.lineid}<br>` +
       `<strong>Supplied:</strong> ${feature.properties.supplied}`);
     }
-  }).addTo(map);
+  });
+
+  // Add the pointsLayer to the overlayMaps control
+  overlayMaps["Lines from Database"] = linesLayer;
+
+  // Add the pointsLayer to the map
+  linesLayer.addTo(map);
+
+
+  mapLayer.remove();
+  mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
 }
-
-
 
 
 
@@ -230,7 +332,26 @@ console.log(`Error in fetching in Geojsondata ${error}`)}
 
 
 try {
-  const response = await fetch(`http://localhost:5001/api/getdata`, {
+  const response1 = await fetch(`http://localhost:5001/api/getdata`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  const data = await response1.json();
+  if(!response1.ok){
+    console.log(`HTTP error! Status: ${response1.status}`);
+  }
+  // console.log(data);
+  displayPointsOnMap(data);
+
+} catch (error) {
+  console.log(`Error fetching GeoJSON data: ${error}`);
+}
+
+
+try {
+  const response = await fetch(`http://localhost:5001/api/getjunctiondata`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -243,7 +364,7 @@ try {
 
   const data = await response.json();
   // console.log(data);
-  displayPointsOnMap(data);
+  displayJunctionsOnMap(data);
 
 } catch (error) {
   console.log(`Error fetching GeoJSON data: ${error}`);
@@ -265,13 +386,11 @@ var drawControl = new L.Control.Draw({
         featureGroup: drawnItems,
     },
     draw: {
-      marker: {
-        icon: './placeholder.png'
-      },
         marker: true,
         polyline: true,
         polygon: true,
         circle: true,
+        circlemarker: true,
     },
 });
 
@@ -280,71 +399,215 @@ map.addControl(drawControl);
 
 // Retrieving the above drawn data
 
+function openpopup(latitude, longitude, type){
+  // var numberValue = document.getElementById("number").value;
+  var number = document.getElementById("number");
+  var canidnumber = document.getElementById("canidnumber");
+  var underjunction = document.getElementById("underjunction");
+  var heading = document.getElementById("heading");
+  if(type=="junction"){
+    heading.innerText = "Input Junction Details";
+    canidnumber.innerText="Enter Junction ID: ";
+    underjunction.disabled=true;
+  }
+  else{
+    heading.innerText = "Input CAN Details";
+    canidnumber.innerText="Enter CAN Number: ";
+  }
+  popup.classList.add("open-popup");
+  // closepopup = document.getElementById("closepopup");
+  closepopup.addEventListener("click", ()=> {
+    var canNumber = number.value;
+    var junctionID = underjunction.value;
+    // var supplied = document.getElementById("supplied").value;
+    var yesRadioButton = document.getElementById("yes");
+    var noRadioButton = document.getElementById("no");
 
-map.on('draw:created', function (e) {
-  // alert("I am")
-  var layer = e.layer;
-  drawnItems.addLayer(layer);
-  // Access the shape data and do something with it
-  var shapeData = layer.toGeoJSON();
-  // Store or process the shapeData as needed
-  var coordinates;
-  // Check if it's a Point geometry (Marker)
-  if (shapeData.geometry.type === 'Point') {
-    coordinates = shapeData.geometry.coordinates;
-    var latitude = coordinates[1];
-    var longitude = coordinates[0];
-
-    // const textToAppend = "Hello World";
-    // var mas = latitude+", "+longitude;
-    let popup = document.getElementById("popup");
-
-    function openpopup(){
-        popup.classList.add("open-popup");
-        alert("Infunction")
+    var isWaterSupplied;
+      if (yesRadioButton.checked) {
+          isWaterSupplied = yesRadioButton.value;
+      } else if (noRadioButton.checked) {
+          isWaterSupplied = noRadioButton.value;
+      } else {
+          isWaterSupplied = "Not specified";
     }
+    alert(isWaterSupplied);
+    handlepopupvalues(canNumber, junctionID, isWaterSupplied, latitude, longitude, type);
+    popup.classList.remove("open-popup");
+  })
+  // alert("Infunction")
+}
 
-    function closepopup(){
-        popup.classList.remove("open-popup");
-    }
-
-    openpopup();
-    
-    // alert(mas);
-    var pointName=prompt("enter name");
-    var supplied=prompt("Is water supplied?");
-
-    const sendPointDataToServer = async () => {
-      const dataToSend = {
-        "type": "Point",
-        "coordinates": [longitude, latitude],
-        "properties":{
-          "name":pointName,
-          "supplied":supplied,
-        }
-      }
-
-      try {
-        const response = await fetch(`http://localhost:5001/api/addpoint`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dataToSend)
-        });
-
-        const responseData = await response.json();
-        console.log(`Point data sucessfully sent to server: ${responseData}`);
-      } catch (error) {
-        console.log(`Error in sending data: ${error}`);
+function handlepopupvalues(number, junctionID, supplied, latitude, longitude, type){
+  const sendPointDataToServer = async () => {
+    const dataToSend = {
+      "type": "Point",
+      "coordinates": [longitude, latitude],
+      "properties":{
+        "can_id":number,
+        "major_Junction":junctionID,
+        "supplied":supplied,
       }
     }
 
-    sendPointDataToServer();
-    location.reload();
+    try {
+      const response = await fetch(`http://localhost:5001/api/addpoint`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+      });
+
+      const responseData = await response.json();
+      console.log(`Point data sucessfully sent to server: ${responseData}`);
+    } catch (error) {
+      console.log(`Error in sending data: ${error}`);
+    }
   }
 
 
+  const sendJunctionDataToServer = async () => {
+    const dataToSend = {
+      "type": "Point",
+      "coordinates": [longitude, latitude],
+      "properties":{
+        "unique_id":number,
+        "supplied":supplied,
+      }
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/addjunction`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+      });
+
+      const responseData = await response.json();
+      console.log(`Point data sucessfully sent to server: ${responseData}`);
+    } catch (error) {
+      console.log(`Error in sending data: ${error}`);
+    }
+  }
+
+
+  if(type=="home"){
+    sendPointDataToServer(); 
+    location.reload();
+  }
+  else if(type=="junction"){
+    sendJunctionDataToServer();
+    location.reload();
+  }
+  else{
+    alert("Shapefile Not valid")
+  }
+}
+
+
+
+
+// ******************************************************
+function openpopupforlines(coordinates){
+  // popup.classList.add("open-popup");
+  // closepopup.addEventListener("click", ()=> {
+  //   var linename = document.getElementById("name").value;
+  //   var supplied = document.getElementById("supplied").value;
+  //   handlepopupvaluesforlines(linename, supplied, coordinates);
+  //   popup.classList.remove("open-popup");
+  // })
+
+  var number = document.getElementById("number");
+  var lineidnumber = document.getElementById("canidnumber");
+  var underjunction = document.getElementById("underjunction");
+  var heading = document.getElementById("heading");
+
+  heading.innerText = "Input Water Pipeline Details:";
+  lineidnumber.innerText="Enter Line ID: ";
+
+  popup.classList.add("open-popup");
+  // closepopup = document.getElementById("closepopup");
+  closepopup.addEventListener("click", ()=> {
+    var lineid = number.value;
+    var junctionID = underjunction.value;
+    // var supplied = document.getElementById("supplied").value;
+    var yesRadioButton = document.getElementById("yes");
+    var noRadioButton = document.getElementById("no");
+
+    var isWaterSupplied;
+      if (yesRadioButton.checked) {
+          isWaterSupplied = yesRadioButton.value;
+      } else if (noRadioButton.checked) {
+          isWaterSupplied = noRadioButton.value;
+      } else {
+          isWaterSupplied = "Not specified";
+    }
+    alert(isWaterSupplied);
+    handlepopupvaluesforlines(lineid, junctionID, isWaterSupplied, coordinates);
+    popup.classList.remove("open-popup");
+  })
+}
+
+function handlepopupvaluesforlines(lineid, junctionid, isWaterSupplied, coordinates){
+  const sendLineDataToServer = async () => {
+    const dataToSend = {
+      "type" : "LineString",
+      "coordinates":coordinates,
+      "properties":{
+        "lineid": lineid || "Id not given",
+        "major_Junction":junctionid,
+        "supplied":isWaterSupplied,
+      }
+    }
+    alert(JSON.stringify(dataToSend));
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/addline` , {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+      })
+
+      const responseData = await response.json();
+      console.log(`Line data added sucessfully to database: ${responseData}`);
+      location.reload();
+    } catch (error) {
+      console.log(`Error in sending data: ${error}`);
+    }
+  }
+  sendLineDataToServer();
+}
+// ******************************************************
+
+
+
+map.on('draw:created', function (e) {
+var layer = e.layer;
+drawnItems.addLayer(layer);
+// Access the shape data and do something with it
+var shapeData = layer.toGeoJSON();
+// alert(JSON.stringify(shapeData));
+// Store or process the shapeData as needed
+var coordinates;
+// Check if it's a Point geometry (Marker)
+if (shapeData.geometry.type === 'Point') {
+  coordinates = shapeData.geometry.coordinates;
+  var latitude = coordinates[1];
+  var longitude = coordinates[0];
+
+  if(layer instanceof L.CircleMarker){
+    alert("It is a circle marker!");
+    openpopup(latitude, longitude, "junction");
+  }
+  else{
+    openpopup(latitude, longitude, "home");
+  }
+  }
 
   else if (shapeData.geometry.type === 'LineString') {
     coordinates = shapeData.geometry.coordinates;
@@ -358,35 +621,7 @@ map.on('draw:created', function (e) {
       arr.push([longitude, latitude]);
     }
     console.log(arr);
-    var name = prompt("Enter Line Name: ");
-    var supplied = prompt("Is water supplied?");
-
-    const sendLineDataToServer = async () => {
-      const dataToSend = {
-        "type" : "LineString",
-        "coordinates":arr,
-        "properties":{
-          "name": name || "Default Line"
-        }
-      }
-
-      try {
-        const response = await fetch(`http://localhost:5001/api/addline` , {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dataToSend)
-        })
-
-        const responseData = await response.json();
-        console.log(`Line data added sucessfully to database: ${responseData}`);
-      } catch (error) {
-        console.log(`Error in sending data: ${error}`);
-      }
-    }
-    sendLineDataToServer();
-    location.reload();
+    openpopupforlines(arr);
 }
 });
 
@@ -406,12 +641,4 @@ map.on('draw:created', function (e) {
 
   layer.options.name = "My Line";
   layer.addTo(map);
-});
-
-map.on('click', function (e) {
-  // Check if a line was clicked
-  if (e.layer instanceof L.Polyline) {
-    var lineName = e.layer.options.name;
-    alert("Line Name: " + lineName);
-  }
 });

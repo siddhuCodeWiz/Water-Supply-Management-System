@@ -6,7 +6,7 @@ const ComplaintSchema = new Schema({
         type: String,
         required: false
     },
-    houseid: {
+    canid: {
         type: Number,
         required: false
     },
