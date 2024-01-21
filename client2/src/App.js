@@ -21,6 +21,10 @@ import Complaint from "./components/Complaints/ComplaintList.jsx"
 import Requests from "./components/Requests/Requests.jsx";
 import AddWorker from "./components/Workers/Workers.jsx"
 
+import WaterDistributionData from "./components/Reports/WaterDistributionData/WaterDistributionData.jsx";
+import ConnectionsHistory from "./components/Reports/ConnectionsHistory/ConnectionsHistory.jsx";
+import ComplaintsHistory from "./components/Reports/ComplaintsHistory/ComplaintsHistory.jsx"
+
 export default function App() { 
   return (
     <BrowserRouter>
@@ -43,6 +47,13 @@ export default function App() {
           <Route path="your-connections" element={<YourConnections/>} >
             <Route index element={<Outlet />} />
             <Route path="request-connection" element={<RequestConnection/>} />
+          </Route> 
+
+          <Route path="reports" >
+            <Route index element={<Outlet />} />
+            <Route path="water-distribution-data" element={<WaterDistributionData/>} />
+            <Route path="connections-history" element={<ConnectionsHistory/>}/>
+            <Route path="complaints-history" element={<ComplaintsHistory/>}/>
           </Route> 
 
           <Route path="*" element={<><h1>NO such component</h1><h1>NO such component</h1><h1>NO such component</h1></>}></Route>

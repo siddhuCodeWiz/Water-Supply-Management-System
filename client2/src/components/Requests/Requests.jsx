@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ConnectionsDetails from "./RequestDetails";
+import './Requests.css'
 
 const ReceivedConnections = () => {
     const [connections, setConnections] = useState([]);

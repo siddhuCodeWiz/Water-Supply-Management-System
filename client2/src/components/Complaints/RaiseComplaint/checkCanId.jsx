@@ -38,7 +38,7 @@ const CheckCanId = () => {
             setShowModal(false)
             alert("User found"+JSON.stringify(response))
             // window.location.reload();
-            navigate('/complaint/raise-complaint', {state:{canId}});
+            navigate('/complaint/raise-complaint', { state: { message: canId } });
 
         } catch(error){
             console.error("Error submitting form:", error);

@@ -25,10 +25,10 @@ const getComplaintOfUser = async (req, res) => {
 
 
 const postComplaint = async (req, res) => {
-    const { name, canid, email, mobile, subject, description, resolved } = req.body;
+    const { name, canId, email, mobile, subject, description, resolved } = req.body;
 
     try {
-        const addcomplaint = await ComplaintModel.create({ name, canid, email, mobile, subject, description, resolved });
+        const addcomplaint = await ComplaintModel.create({ name, canId, email, mobile, subject, description, resolved });
         res.status(200).json(addcomplaint);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -37,15 +37,16 @@ const postComplaint = async (req, res) => {
 
 // '/complaints/:id', 
 const handlecomplaint =async (req, res) => {
+    console.log(req.body);
     const { _id } = req.body;
-    console.log("heelo");
+    // console.log(_id);
     try {
-        const data = {resolved: "yes"};
-    //   await Complaint.findByIdAndUpdate('659e273903456c2fff39b76c',data,{new:true});
+    //     const data = {resolved: "yes"};
+    //   await ComplaintModel.findByIdAndUpdate('65aa99613e01c682f451a2a9',data,{new:true});
     const updateData = { resolved: "yes" };
     await ComplaintModel.findByIdAndUpdate(_id,updateData,{new:true}
     );
-      res.status(500).json({ message: 'Complaint status updated' });
+      res.status(200).json({ message: 'Complaint status updated' });
     } catch (e) {
       res.json({ error: 'Error updating complaint status',e });
       console.log(e);

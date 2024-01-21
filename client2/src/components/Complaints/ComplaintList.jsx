@@ -47,26 +47,25 @@ const ComplaintsPage = () => {
         complaintId = complaintId.toString();
         console.log(complaintId);
         try {
-          const res = await axios.post(`http://localhost:5001/complaints/handlecomplaint`,{
-            _id:{complaintId}
+          const res = await axios.post(`http://localhost:5001/complaints/handlecomplaint`, {
+            _id: complaintId, // Send the complaintId directly, not as an object
           });
-          if(res){
+          console.log(res);
+          if (res) {
             console.log(res);
-              const updatedComplaints = complaints.filter(
-                (complaint) => complaint._id.toString() !== complaintId.toString()
+            const updatedComplaints = complaints.filter(
+              (complaint) => complaint._id.toString() !== complaintId.toString()
             );
             setComplaints(updatedComplaints);
             console.log("updated");
-          }
-          else{
+          } else {
             console.log("no");
           }
-        
-          
         } catch (error) {
           console.error(`Error updating complaint status:`, error);
         }
       };
+      
         
       const handleNoClick = async (complaintId) => {
         console.log(`No action taken for complaint ID ${complaintId}`);
@@ -85,8 +84,8 @@ const ComplaintsPage = () => {
                     {Array.isArray(complaints) && complaints.map((complaint, index) => (
                         <div className="complaint" key={index}>
                             <span><strong>Complaint ID: </strong>{complaint._id}</span>
-                            <span><strong>User: </strong>{complaint.name}</span>
-                            <span><strong>HouseId: </strong>{complaint.houseid}</span>
+                            <span style={{textTransform:"capitalize"}}><strong>User: </strong>{complaint.name}</span>
+                            <span><strong>CAN ID: </strong>{complaint.canId}</span>
                             <span><strong>Email: </strong>{complaint.email}</span>
                             <span><strong>Mobile Number: </strong>{complaint.mobile}</span>
                             <span><strong>Subject: </strong>{complaint.subject}</span>

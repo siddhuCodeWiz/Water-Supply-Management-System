@@ -77,56 +77,56 @@ var baseMaps ={
 
 
 // Declaring useful variables
-var geoServerIPPort = 'localhost:8080';
-var geoServerWorkspace = 'siddharth';
-var stateLayerName = 'siddharth:main_water_lines_pg';
+// var geoServerIPPort = 'localhost:8080';
+// var geoServerWorkspace = 'siddharth';
+// var stateLayerName = 'siddharth:main_water_lines_pg';
 
 // Adding a layer from geoserver (Works only if geoserver's application is running in bg)
-var mainWaterLineLayer = L.tileLayer.wms(
-  "http://localhost:8080/geoserver/siddharth/wms",
-  {
-    layers: 'siddharth:Main_Water_Lines_nonpg',
-    format: "image/png",
-    transparent: true,
-    version: "1.1.0",
-    tiled: true,
-  }
-)
+// var mainWaterLineLayer = L.tileLayer.wms(
+//   "http://localhost:8080/geoserver/siddharth/wms",
+//   {
+//     layers: 'siddharth:Main_Water_Lines_nonpg',
+//     format: "image/png",
+//     transparent: true,
+//     version: "1.1.0",
+//     tiled: true,
+//   }
+// )
 
-var houseConnectsLayer = L.tileLayer.wms(
-  "http://localhost:8080/geoserver/siddharth/wms",
-  {
-    layers: '	siddharth:House_Connects_nonpg',
-    format: "image/png",
-    transparent: true,
-    version: "1.1.0",
-    tiled: true,
-  }
-)
+// var houseConnectsLayer = L.tileLayer.wms(
+//   "http://localhost:8080/geoserver/siddharth/wms",
+//   {
+//     layers: '	siddharth:House_Connects_nonpg',
+//     format: "image/png",
+//     transparent: true,
+//     version: "1.1.0",
+//     tiled: true,
+//   }
+// )
 
-var waterTanksLayer = L.tileLayer.wms(
-  "http://localhost:8080/geoserver/siddharth/wms",
-  {
-    layers: '	siddharth:House_Connects_nonpg',
-    format: "image/png",
-    transparent: true,
-    version: "1.1.0",
-    tiled: true,
-  }
-)
+// var waterTanksLayer = L.tileLayer.wms(
+//   "http://localhost:8080/geoserver/siddharth/wms",
+//   {
+//     layers: '	siddharth:House_Connects_nonpg',
+//     format: "image/png",
+//     transparent: true,
+//     version: "1.1.0",
+//     tiled: true,
+//   }
+// )
 
 // declaring all the layers with names in a object
-var overlayMaps = {
-  "Main Water Line": mainWaterLineLayer,
-  "House Connects" : houseConnectsLayer,
-
-};
+// var overlayMaps = {
+//   "Main Water Line": mainWaterLineLayer,
+//   "House Connects" : houseConnectsLayer,
+// };
+var overlayMaps ={}
 
 // Defining the look of the map and declaring the layers
 var map = L.map('map', {
   center: [17.3981383, 78.4890028],
   zoom: 16,
-  layers:[osmMap, mainWaterLineLayer, houseConnectsLayer],
+  layers:[osmMap],
 })
 
 
@@ -143,6 +143,7 @@ var mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
 function displayPointsOnMap(geojsonDataForPoints) {
   const data = [];
   const junctiondata = {};
+  const complaintsCanIds = {};
   var formattedFeature;
   // console.log(geojsonDataForPoints);
   // alert(JSON.stringify(geojsonDataForPoints.pointsData[0].properties));
@@ -153,9 +154,21 @@ function displayPointsOnMap(geojsonDataForPoints) {
         'Content-Type': 'application/json'
       },
     })
+
+    const response2 = await fetch(`http://localhost:5001/complaints/getcomplaints`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
     const junctioninfo = await response1.json();
+    const complaintInfo = await response2.json();
     await junctioninfo.junctionData.forEach(element => {
       junctiondata[element.properties.unique_id]=element.properties.supplied;
+    })
+    // alert(JSON.stringify(complaintInfo));
+    await complaintInfo.forEach(element => {
+      complaintsCanIds[element.canId]=true;
     })
     processjunctiondata();
     if(!response1.ok){
@@ -169,13 +182,14 @@ function displayPointsOnMap(geojsonDataForPoints) {
   fetchdata();
   function processjunctiondata(){
   // alert(JSON.stringify(junctiondata));
+  // alert(JSON.stringify(complaintsCanIds));
   geojsonDataForPoints["pointsData"].forEach(element => {
     const canID = element && element.properties && element.properties.can_id;
-    // alert(canID);
+    // alert(element);
     var jid = element.properties.major_Junction;
     var supplied = junctiondata[jid];
 
-    if (element.properties.supplied=="yes" && supplied === "yes") {
+    if (element.properties.supplied=="yes" && supplied === "yes" && complaintsCanIds[canID]==null) {
       formattedFeature = {
         "type": "Feature",
         "geometry": {
@@ -189,7 +203,7 @@ function displayPointsOnMap(geojsonDataForPoints) {
             iconSize: [28, 28],
             iconAnchor: [16, 16],
           }),
-          "supplied": element.properties.supplied,
+          "ConnectedJunction_ID": jid,
         }
       };
     } else {
@@ -206,7 +220,7 @@ function displayPointsOnMap(geojsonDataForPoints) {
             iconSize: [28, 28],
             iconAnchor: [16, 16],
           }),
-          "supplied": element.properties.supplied,
+          "ConnectedJunction_ID": jid,
         }
       };
     }
@@ -221,13 +235,16 @@ function displayPointsOnMap(geojsonDataForPoints) {
     pointToLayer: function (feature, latlng) {
       const icon = feature.properties.icon || L.icon.default();
       const marker = L.marker(latlng, { icon: icon }).bindPopup(`<strong>CAN ID: </strong> ${feature.properties.CAN_id}<br>` +
-        `<strong>Supplied:</strong> ${feature.properties.supplied}`);
+        `<strong>Connected JID: </strong> ${feature.properties.ConnectedJunction_ID}`);
 
       // Add double-click event listener to each marker
       marker.on('dblclick', function () {
         // Remove the clicked marker from the pointsLayer
         pointsLayer.removeLayer(marker);
       });
+
+      // marker.bindTooltip('Additional Info', { permanent: true, direction: 'right' });
+      
 
       return marker;
     }
@@ -271,8 +288,8 @@ function displayJunctionsOnMap(geojsonData) {
       "properties": {
         "unique_id": uniqueJunction_id || "No Junction Name",
         "icon": L.icon({
-          iconUrl: "./water-tank.png",
-          iconSize: [40, 40],
+          iconUrl: "./junction.png",
+          iconSize: [45, 45],
           iconAnchor: [16, 16],
         }),
         "supplied": element.properties.supplied,

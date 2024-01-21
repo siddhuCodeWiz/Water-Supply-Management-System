@@ -6,8 +6,8 @@ const ComplaintSchema = new Schema({
         type: String,
         required: false
     },
-    canid: {
-        type: Number,
+    canId: {
+        type: String,
         required: false
     },
     email: {

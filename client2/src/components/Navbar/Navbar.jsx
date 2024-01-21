@@ -1,5 +1,5 @@
 import "./Navbar.css";
-import React from "react";
+import React,{useState} from "react";
 import { Link, Routes, Route, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -12,6 +12,7 @@ import Createrecipe from "../../pages/createrecipe";
 
 function Navbar() {
   const [cookies, setCookies] = useCookies(["access_token"]);
+  const [click, setClick] = useState(false);
   const user = cookies.access_token ? jwtDecode(cookies.access_token) : null;
   // alert(JSON.stringify(user));
   const navigate = useNavigate();
@@ -21,6 +22,9 @@ function Navbar() {
     window.localStorage.removeItem("userID");
     // window.localStorage.removeItem("role");
     navigate("/auth");
+  };
+  const handleClick = () => {
+    setClick(!click);
   };
 
   return (
@@ -45,8 +49,15 @@ function Navbar() {
                 <Link to="/requests" className="nav-link">
                   <span>Requests</span>
                 </Link>
-                <Link to="/requests" className="nav-link">
-                  <span>Reports</span>
+                <Link to="/reports" className="dropdown">
+                  {/* <a href="#"> */}
+                  <span className="reports">Reports</span>
+                  <div className="dropdown-menu">
+                    <Link to="/reports/water-distribution-data">Water Distribution Data</Link>
+                    <Link to="/reports/complaints-history">Complaints History</Link>
+                    <Link to="/reports/connections-history">Connections Data</Link>
+                  </div>
+
                 </Link>
               </div>
             )}
@@ -54,6 +65,9 @@ function Navbar() {
               <div className="left-side">
                 <Link to="/complaint" className="nav-link">
                   <span>Complaint</span>
+                </Link>
+                <Link to="/requests" className="nav-link">
+                  <span>Requests</span>
                 </Link>
                 <Link to="/maps" className="nav-link">
                   <span>Maps</span>
@@ -77,11 +91,17 @@ function Navbar() {
               >
                 Logout
               </button>
-              <div className="profile">
+              <div className="profile" onClick={handleClick}>
                 <HiMiniUserCircle className="profile-icon"/>
                 <span>{user.role}</span>
                 {/* <span>{user.name}</span> */}
               </div>
+              {click && (
+                <div className="user-info-dropdown user_drop">
+                  <span><strong>Hello!  {user.name}</strong></span>
+                  <span>ID: {user.id}</span>
+                </div>
+              )}
             </div>
             
           </>

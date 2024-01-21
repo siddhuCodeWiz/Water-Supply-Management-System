@@ -27,17 +27,21 @@ function YourConnections(){
             }
         };
         fetchConnections();
-    }, [user.role]);
+    }, [connections]);
 
 
 
     return (
         <div className="connection-container">
           <h1>Your connections</h1>
-          <Link to="/your-connections/request-connection">
+
+          {connections.data ?<Link to="/your-connections/request-connection">
+          <button className="request" disabled title="Connections already exist" style={{cursor:"not-allowed"}}>Request Connection <IoAddCircleSharp className="icon"/>
+            </button>
+          </Link> : <Link to="/your-connections/request-connection">
           <button className="request">Request Connection            <IoAddCircleSharp className="icon"/>
             </button>
-          </Link>
+          </Link>}
           <div>
         {/* Use Outlet here to render child routes */}
         <Outlet />

@@ -301,8 +301,22 @@ const searchConnection = async (req, res) => {
 
 
 
+const AcceptedConnectionsList = async(req,res) => {
+  try {
+    const result = await acceptedConnectionsModel.find({});
+
+    res.status(200).json({
+      success:true,
+      data: result
+    })
+  } catch (error) {
+    res.status(500).json({
+      success:false,
+      message: `Server Error: ${error}`
+    })
+  }
+}
 
 
 
-
-module.exports = { addConnection, searchConnection, receivedConnections, acceptConneciton};
+module.exports = { addConnection, searchConnection, receivedConnections, acceptConneciton, AcceptedConnectionsList};

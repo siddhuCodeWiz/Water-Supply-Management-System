@@ -76,7 +76,7 @@ const fetchData = async () => {
           "Referer": "http://teleuniv.co.in/",
           "Referrer-Policy": "strict-origin-when-cross-origin"
         },
-        "body": "{\"method\":\"314\",\"rollno\":\"2422080\"}",
+        "body": "{\"method\":\"314\",\"rollno\":\"2422066\"}",
         "method": "POST"
       });
   
@@ -105,7 +105,7 @@ const res = async () => {
           "Referer": "https://kmitastra.vercel.app/",
           "Referrer-Policy": "strict-origin-when-cross-origin"
         },
-        body: JSON.stringify({ "rollno": "22BD1A056J" }),
+        body: JSON.stringify({ "rollno": "22BD1A0577" }),
         method: "POST"
       });
   
@@ -136,7 +136,7 @@ try {
           "Referer": "http://teleuniv.co.in/",
           "Referrer-Policy": "strict-origin-when-cross-origin"
         },
-        "body": "{\"method\":\"32\",\"rollno\":\"2422080\"}",
+        "body": "{\"method\":\"32\",\"rollno\":\"2422066\"}",
         "method": "POST"
       });
 
@@ -152,7 +152,7 @@ try {
 };
 
 // Call the res function to make the request
-// res1();
+res1();
 
 
 const internalResults = async() => {

@@ -1,7 +1,69 @@
 var osmMap = L.tileLayer.provider('OpenStreetMap.Mapnik');
 var streetMap = L.tileLayer.provider('Esri.WorldStreetMap');
 
-// var fs = require('fs');
+
+
+// function goToLocation() {
+//   var latitude;
+//   var longitude;
+//   const searchcan = document.getElementById("search-can")
+
+//   searchcan.addEventListener("click",()=>{
+//     var canid=document.getElementById("can-container").value
+//     alert(canid)
+
+//   })
+//   // var latitude = parseFloat(document.getElementById('latitude').value);
+ 
+//   // var longitude = parseFloat(document.getElementById('longitude').value);
+  
+
+//   if (!isNaN(latitude) && !isNaN(longitude)) {
+//       map.setView([latitude, longitude], 20);
+//   } else {
+//       alert('Please enter valid latitude and longitude values.');
+//   }
+// }
+// alert("hb")
+const canSearch = document.getElementById("can-btn")
+canSearch.addEventListener("click", ()=> {
+  const dat = document.getElementById("can-container").value
+  const fetchdata = async()=>{try {
+    const response1 = await fetch(`http://localhost:5001/api/getdetailsbycanid`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body:JSON.stringify({
+        "canid":dat
+      })
+    })
+    const pointinfo = await response1.json();
+    if(!response1.ok){
+      console.log(`HTTP error! Status: ${response1.status}`);
+    }
+    // alert(JSON.stringify(pointinfo))
+    var latitude = pointinfo.pointData[0].coordinates[1];
+    // alert(latitude);
+    var longitude = pointinfo.pointData[0].coordinates[0];
+    
+
+    if (!isNaN(latitude) && !isNaN(longitude)) {
+        map.setView([latitude, longitude], 20);
+    } else {
+        alert('Please enter valid latitude and longitude values.');
+    }
+  
+  } catch (error) {
+    console.log(`Error fetching GeoJSON data: ${error}`);
+  } 
+  }
+  fetchdata();
+  
+})
+// function goToLocation(){
+  
+// }
 
 // Adding the base Maps which we want from the Leaflet-Provider Plugin
 var baseMaps ={
@@ -67,6 +129,13 @@ var map = L.map('map', {
   layers:[osmMap, mainWaterLineLayer, houseConnectsLayer],
 })
 
+
+
+
+// **************************(SET VIEW)****************************
+
+// goToLocation();
+
 // Adding the layers to the map
 var mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
 
@@ -74,6 +143,7 @@ var mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
 function displayPointsOnMap(geojsonDataForPoints) {
   const data = [];
   const junctiondata = {};
+  const complaintsCanIds = {};
   var formattedFeature;
   // console.log(geojsonDataForPoints);
   // alert(JSON.stringify(geojsonDataForPoints.pointsData[0].properties));
@@ -84,9 +154,21 @@ function displayPointsOnMap(geojsonDataForPoints) {
         'Content-Type': 'application/json'
       },
     })
+
+    const response2 = await fetch(`http://localhost:5001/complaints/getcomplaints`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
     const junctioninfo = await response1.json();
+    const complaintInfo = await response2.json();
     await junctioninfo.junctionData.forEach(element => {
       junctiondata[element.properties.unique_id]=element.properties.supplied;
+    })
+    // alert(JSON.stringify(complaintInfo));
+    await complaintInfo.forEach(element => {
+      complaintsCanIds[element.canId]=true;
     })
     processjunctiondata();
     if(!response1.ok){
@@ -100,13 +182,14 @@ function displayPointsOnMap(geojsonDataForPoints) {
   fetchdata();
   function processjunctiondata(){
   // alert(JSON.stringify(junctiondata));
+  // alert(JSON.stringify(complaintsCanIds));
   geojsonDataForPoints["pointsData"].forEach(element => {
     const canID = element && element.properties && element.properties.can_id;
-    // alert(canID);
+    // alert(element);
     var jid = element.properties.major_Junction;
     var supplied = junctiondata[jid];
 
-    if (element.properties.supplied=="yes" && supplied === "yes") {
+    if (element.properties.supplied=="yes" && supplied === "yes" && complaintsCanIds[canID]==null) {
       formattedFeature = {
         "type": "Feature",
         "geometry": {
@@ -117,10 +200,10 @@ function displayPointsOnMap(geojsonDataForPoints) {
           "CAN_id": canID || "No ID",
           "icon": L.icon({
             iconUrl: "./blue.png",
-            iconSize: [52, 52],
+            iconSize: [28, 28],
             iconAnchor: [16, 16],
           }),
-          "supplied": element.properties.supplied,
+          "ConnectedJunction_ID": jid,
         }
       };
     } else {
@@ -134,10 +217,10 @@ function displayPointsOnMap(geojsonDataForPoints) {
           "CAN_id": canID || "No ID",
           "icon": L.icon({
             iconUrl: "./red.png",
-            iconSize: [52, 52],
+            iconSize: [28, 28],
             iconAnchor: [16, 16],
           }),
-          "supplied": element.properties.supplied,
+          "ConnectedJunction_ID": jid,
         }
       };
     }
@@ -152,13 +235,16 @@ function displayPointsOnMap(geojsonDataForPoints) {
     pointToLayer: function (feature, latlng) {
       const icon = feature.properties.icon || L.icon.default();
       const marker = L.marker(latlng, { icon: icon }).bindPopup(`<strong>CAN ID: </strong> ${feature.properties.CAN_id}<br>` +
-        `<strong>Supplied:</strong> ${feature.properties.supplied}`);
+        `<strong>Connected JID: </strong> ${feature.properties.ConnectedJunction_ID}`);
 
       // Add double-click event listener to each marker
       marker.on('dblclick', function () {
         // Remove the clicked marker from the pointsLayer
         pointsLayer.removeLayer(marker);
       });
+
+      // marker.bindTooltip('Additional Info', { permanent: true, direction: 'right' });
+      
 
       return marker;
     }
@@ -202,8 +288,8 @@ function displayJunctionsOnMap(geojsonData) {
       "properties": {
         "unique_id": uniqueJunction_id || "No Junction Name",
         "icon": L.icon({
-          iconUrl: "./water-tank.png",
-          iconSize: [52, 52],
+          iconUrl: "./tanker.jpg",
+          iconSize: [40, 40],
           iconAnchor: [16, 16],
         }),
         "supplied": element.properties.supplied,
@@ -264,7 +350,8 @@ function displaylinesOnMap(geojsonData) {
       },
       "properties": {
         "lineid": lineid || "default",
-        "color": "red",
+        "major_Junction":element.properties.major_Junction,
+        // "color": "red",
         "supplied": element.properties.supplied,
       }
     };
@@ -272,14 +359,43 @@ function displaylinesOnMap(geojsonData) {
   });
 
   console.log(data);
+  
+
+  const junctiondata = {};
+  // console.log(geojsonDataForPoints);
+  // alert(JSON.stringify(geojsonDataForPoints.pointsData[0].properties));
+  const fetchdata = async()=>{try {
+    const response1 = await fetch(`http://localhost:5001/api/getjunctiondata`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+    const junctioninfo = await response1.json();
+    await junctioninfo.junctionData.forEach(element => {
+      junctiondata[element.properties.unique_id]=element.properties.supplied;
+    })
+    processjunctiondata();
+    if(!response1.ok){
+      console.log(`HTTP error! Status: ${response1.status}`);
+    }
+  
+  } catch (error) {
+    console.log(`Error fetching GeoJSON data: ${error}`);
+  } 
+  }
+  fetchdata();
 
   // Assuming 'data' contains your GeoJSON LineString or MultiLineString geometry
+  function processjunctiondata(){
   const linesLayer = L.geoJSON(data, {
     style: function (feature) {
-      if(feature.properties.supplied=="yes"){
+      var jid = feature.properties.major_Junction;
+      var supplied = junctiondata[jid];
+      if(feature.properties.supplied=="yes" && supplied=="yes"){
         return {
           color: 'blue',  // Set the color of the line
-          weight: 4,      // Set the weight or thickness of the line
+          weight: 2.5,      // Set the weight or thickness of the line
           opacity: 1      // Set the opacity of the line
         };
       }
@@ -308,6 +424,7 @@ function displaylinesOnMap(geojsonData) {
 
   mapLayer.remove();
   mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
+}
 }
 
 
@@ -394,12 +511,20 @@ var drawControl = new L.Control.Draw({
     },
 });
 
-map.addControl(drawControl);
+// map.addControl(drawControl);
+
+const getrole=window.localStorage.getItem("role")
+  console.log(getrole, "yoooooooo");
+
+  {getrole === "admin" || getrole === "engineer" ? (
+            map.addControl(drawControl)
+) : null}
 
 
 // Retrieving the above drawn data
 
 function openpopup(latitude, longitude, type){
+  // alert("hi")
   // var numberValue = document.getElementById("number").value;
   var number = document.getElementById("number");
   var canidnumber = document.getElementById("canidnumber");
@@ -431,7 +556,7 @@ function openpopup(latitude, longitude, type){
       } else {
           isWaterSupplied = "Not specified";
     }
-    alert(isWaterSupplied);
+    // alert(isWaterSupplied);
     handlepopupvalues(canNumber, junctionID, isWaterSupplied, latitude, longitude, type);
     popup.classList.remove("open-popup");
   })

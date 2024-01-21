@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import { useCookies } from "react-cookie";
@@ -11,9 +11,13 @@ const RaiseComplaint = (props) => {
     const [cookies, setCookies] = useCookies(["access_token"]);
     const user = cookies.access_token ? jwtDecode(cookies.access_token) : null;
     // const {canId} = props.location.state;
-    
+    const location = useLocation();
+    const canId = location.state?.message;
+    console.log(canId);
+
     useEffect(() => {
         alert(JSON.stringify(props))
+        console.log(props);
         const fetchConnections = async () => {
             try {
             const response = await axios.post('http://localhost:5001/connection/searchuserconnection', {
@@ -32,7 +36,7 @@ const RaiseComplaint = (props) => {
     const [showModal, setShowModal] = useState(true);
     const [formData, setFormData] = useState({
         name: user.name,
-        // canId: canId,
+        canId: canId,
         email: '',
         mobile:'',
         subject:'',
@@ -98,7 +102,7 @@ const RaiseComplaint = (props) => {
                                 onChange={handleChange}
                                 className="input-field"
                             />
-                            {/* <input
+                            <input
                                 type="text"
                                 name="canId"
                                 placeholder="Your CanID"
@@ -107,7 +111,7 @@ const RaiseComplaint = (props) => {
                                 disabled={true}
                                 onChange={handleChange}
                                 className="input-field"
-                            /> */}
+                            />
                             <input
                                 type="text"
                                 name="email"

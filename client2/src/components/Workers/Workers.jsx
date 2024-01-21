@@ -28,59 +28,78 @@ const AddWorker = () => {
 
   return (
     <div className='whole'>
-      <button className='btn' onClick={() => setShowModal(true)}>Add Worker</button>
+      <div className="work_btn">
+      <button className='worker_btn' onClick={() => setShowModal(true)}>Add Worker</button></div>
       {showModal && (
-          <div className="worker">
+          <div className="worker worker_drop">
             <div className="worker-content">
-              <span className="close" onClick={() => setShowModal(false)}>
-                &times;
-              </span>
-              <h2 className="form-title">Add Worker</h2>
+              
+              {/* <h2 className="form-title">Add Worker</h2> */}
               <form className="worker-form" onSubmit={handleSubmit}>
+                <div className="work_inp">
                 <input
                   type="text"
                   name="name"
-                  placeholder="Name"
+                  // placeholder="Name"
                   value={formData.name}
                   onChange={handleChange}
                   className="input-field"
                 />
+                <label htmlFor="">Name</label>
+                </div>
+                <div className="work_inp">
                 <input
                   type="text"
                   name="phoneNumber"
-                  placeholder="Phone Number"
+                  // placeholder="Phone Number"
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   className="input-field"
                 />
+                <label htmlFor="">Phone number</label>
+                </div>
+                <div className="work_inp">
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  // placeholder="Email"
                   value={formData.email}
                   onChange={handleChange}
                   className="input-field"
                 />
+                <label htmlFor="">Email</label>
+                </div>
+                <div className="work_inp">
                 <input
                   type="password"
                   name="password"
-                  placeholder="Password"
+                  // placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
                   className="input-field"
                 />
+                <label htmlFor="">Password</label>
+                </div>
+                <div className="work_inp">
                 <input
                   type="password"
                   name="confirmPassword"
-                  placeholder="Confirm Password"
+                  // placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className="input-field"
                 />
-                <button type="submit" className="submit-button">
-                  Add Worker
+                <label htmlFor="">Confirm password</label>
+                </div>
+                <div className="work_btn1">
+                <button type="submit" className="submit_work-button">
+                  Add
                 </button>
+                </div>
               </form>
+              <span className="close" onClick={() => setShowModal(false)}>
+                &times;
+              </span>
             </div>
           </div>
       )}

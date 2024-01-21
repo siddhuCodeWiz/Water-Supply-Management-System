@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import { useCookies } from "react-cookie";
@@ -32,11 +32,11 @@ const NewWaterConnection = () => {
 
             setShowModal(false)
             alert("Request for new connection successfully sent")
-            window.location.reload();
-
+            // window.location.reload();
+            Navigate('/your-connections')
         } catch(error){
             console.error("Error submitting form:", error);
-            alert("An unexpected error occurred");
+            // alert("An unexpected error occurred");
         }
     }
 
