@@ -1,10 +1,13 @@
 .login-form{
-    width: 400px;
+    width: 430px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 6px;
+    border-radius: 3px;
+   padding: 10%;
+   background-color: #8bb7d2;
 }
 
 .heading{

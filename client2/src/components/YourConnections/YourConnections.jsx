@@ -64,31 +64,6 @@ function YourConnections(){
           </div>
         </div>
       );
-
-    // return (
-    //     <div className="complaints-container">
-    //       <h1>Your connections</h1>
-    //       <p>{JSON.stringify(connections)}</p>
-    //       <div>
-    //         {connections.data ? (
-    //           connections.data.map((connection, index) => (
-    //             <div className="complaint" key={index}>
-    //               <span><strong>Name: </strong>{connection.name}</span>
-    //               <span><strong>User: </strong>{connection.name}</span>
-    //               <span><strong>HouseId: </strong>{connection.name}</span>
-    //               <span><strong>Email: </strong>{connection.name}</span>
-    //               <span><strong>Mobile Number: </strong>{connection.name}</span>
-    //               <span><strong>Subject: </strong>{connection.name}</span>
-    //               <span><strong>Description: </strong>{connection.name}</span>
-    //               <span><strong>Status: </strong>{connection.name}</span>
-    //             </div>
-    //           ))
-    //         ) : (
-    //           <h3>No connections received so far</h3>
-    //         )}
-    //       </div>
-    //     </div>
-    //   );
 }
 
 export default YourConnections;

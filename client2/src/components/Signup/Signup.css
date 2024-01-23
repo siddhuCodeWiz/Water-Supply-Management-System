@@ -1,10 +1,14 @@
 .signup-form{
-    width: 400px;
+    width: 430px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 10px;
+  border-radius: 5px;
+  padding-bottom: 7%;
+  background-color: #8bb7d2;
+  margin-top: 7%;
 }
 
 .heading{

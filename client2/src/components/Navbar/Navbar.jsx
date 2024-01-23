@@ -49,7 +49,7 @@ function Navbar() {
                 <Link to="/requests" className="nav-link">
                   <span>Requests</span>
                 </Link>
-                <Link to="/reports" className="dropdown">
+                <Link to="" className="dropdown">
                   {/* <a href="#"> */}
                   <span className="reports">Reports</span>
                   <div className="dropdown-menu">

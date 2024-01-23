@@ -27,6 +27,6 @@ const acceptedConnectionsSchema = new Schema({
         default:0,
     }
 
-});
+}, {timestamps:true});
 const acceptedConnectionsModel = mongoose.model('AcceptedConnections', acceptedConnectionsSchema);
 module.exports = acceptedConnectionsModel;

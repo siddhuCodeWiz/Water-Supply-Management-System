@@ -47,7 +47,7 @@ export default function App() {
           <Route path="your-connections" element={<YourConnections/>} >
             <Route index element={<Outlet />} />
             <Route path="request-connection" element={<RequestConnection/>} />
-          </Route> 
+          </Route>
 
           <Route path="reports" >
             <Route index element={<Outlet />} />

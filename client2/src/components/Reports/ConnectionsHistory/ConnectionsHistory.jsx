@@ -7,6 +7,16 @@ const ConnectionsHistory = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const convertToIST = (utcTimeStamp) => {
+    if(utcTimeStamp == null){
+      return null;
+    }
+    const date = new Date(utcTimeStamp);
+    const istDate = new Intl.DateTimeFormat('en-US', {timeZone: 'Asia/Kolkata'}).format(date);
+    return istDate;
+
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,6 +39,7 @@ const ConnectionsHistory = () => {
     { Header: 'City', accessor: 'city' },
     { Header: 'Pincode', accessor: 'pincode' },
     { Header: 'Can', accessor: 'can' },
+    { Header: 'Connections Approved On', accessor: 'createdAt', Cell:({value}) => convertToIST(value) },
   ], []);
 
   const {

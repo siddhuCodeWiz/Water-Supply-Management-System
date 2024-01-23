@@ -23,7 +23,7 @@ const connectionSchema = new Schema({
         required: false,
         default: -1
     }
-});
+}, {timestamps:true});
 
 const ConnectionModel = mongoose.model('connections', connectionSchema);
 module.exports = ConnectionModel;

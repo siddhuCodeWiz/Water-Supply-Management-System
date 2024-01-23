@@ -11,9 +11,6 @@ const ComplaintsHistory = () => {
         const fetchData = async() => {
             try {
                 const response = await axios.get("http://localhost:5001/reports/getComHistory");
-                
-                
-
                 setData(response.data);
                 setLoading(false);
             } catch (error) {
@@ -26,6 +23,13 @@ const ComplaintsHistory = () => {
         fetchData();
     }, []);
 
+    const convertToIST = (utcTimeStamp) => {
+      const date = new Date(utcTimeStamp);
+      const istDate = new Intl.DateTimeFormat('en-US', {timeZone: 'Asia/Kolkata'}).format(date);
+      return istDate;
+
+    }
+
     const columns = React.useMemo(() => [
         {Header:'Name', accessor: 'name'},
         {Header:'CAN ID', accessor: 'canId'},
@@ -34,7 +38,10 @@ const ComplaintsHistory = () => {
         {Header:'Subject', accessor: 'subject'},
         {Header:'Description', accessor: 'description'},
         {Header:'Resolved', accessor: 'resolved'},
+        {Header:'Created On', accessor: 'createdAt', Cell: ({value})=> convertToIST(value)},
+        {Header:'Resolved On', accessor: 'updatedAt', Cell: ({value})=> convertToIST(value)},
     ], []);
+
 
     const {getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, state: { globalFilter }, setGlobalFilter} = useTable({columns, data}, useGlobalFilter);
 

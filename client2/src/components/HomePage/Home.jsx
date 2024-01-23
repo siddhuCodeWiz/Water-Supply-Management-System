@@ -1,10 +1,11 @@
 import "./Home.css";
-
+import taps from "./log-photo.jpg";
+import tap from "./tap2.jpg";
 function home() {
   return (
     <div className="body">
       <header>
-        <img src="log-PhotoRoom.png-PhotoRoom.png" alt="jal" />
+        <img src={taps} alt="jal" />
         <div class="head">
           <h1>KMSWD</h1>
         </div>
@@ -28,7 +29,7 @@ function home() {
                 network or water supply system is a system of engineered
                 hydrologic and hydraulic components that provide water supply. A
                 water supply system typically includes the following: A drainage
-                basin (see water purification – sources of drinking water)
+                basin (see water purification - sources of drinking water)
               </p>
               <p>
                 Water supply systems are networks whose edges and nodes are
@@ -45,7 +46,7 @@ function home() {
             </div>
           </div>
           <div className="tap">
-            <img src="https://img.freepik.com/premium-vector/vector-illustration-water-tap-with-earth-globe-inside-water-drop-white-background_88114-269.jpg" alt="tap" />
+            <img src={tap} alt="tap" />
           </div>
         </div>
         <div className="supply">
@@ -56,7 +57,7 @@ function home() {
         </div>
         <div className="empty">
           <div className="about">
-            <h3>About our website 👉</h3>
+            <h5>About our website 👉</h5>
           </div>
           <marquee behavior="smooth" direction="left">
             Keshav Memorial Water Supply Distribution (KMSWD)
@@ -91,11 +92,13 @@ function home() {
                   a reliable and consistent supply.
                 </p>
                 <div className="img1">
-                  <img src="Point1.avif" alt="" />
-                  <img src="point2.avif" alt="" />
+                  <img src="https://img.freepik.com/premium-vector/folded-location-map-with-marker-city-map-with-pin-pointer_349999-746.jpg?size=626&ext=jpg&ga=GA1.1.397762671.1703252081&semt=sph"  
+                   alt="point1"/>
+                  <img src="https://img.freepik.com/premium-vector/gps-navigator-pin-checking-point-point-b-street-map-with-distance-pointer_99087-9.jpg?size=626&ext=jpg&ga=GA1.1.397762671.1703252081&semt=sph" 
+               alt="point2"/>
                 </div>
               </div>
-
+                  
               <h4>Connection to Household:</h4>
               <div className="para">
                 <div className="img2">
@@ -108,10 +111,10 @@ function home() {
                   The water supply network extends to individual households
                   through a system of pipes branching off the main distribution
                   lines. Each household is connected to this network through a
-                  water meter and a service line. Water Meters: Water meters are
+                  water meter and a service  Water Meters: Water meters are
                   installed at each household to measure the amount of water
                   consumed. This data is crucial for billing purposes and helps
-                  in monitoring and managing water usage. Pressure Regulation:
+                  in monitoring and managing water usage.Pressure Regulation:
                   The network is designed to maintain adequate water pressure
                   throughout the distribution system. Pressure-regulating valves
                   are strategically placed to ensure that water reaches all
@@ -158,7 +161,7 @@ function home() {
       <footer className="footer">
         <div className="flx">
           <div className="contact-info">
-            <h3>Services</h3>
+            <h4>Services</h4>
             <p>Contact: +123 745 632</p>
             <p>Email: KMSWD@gmail.com</p>
             <p>
@@ -167,7 +170,7 @@ function home() {
             </p>
           </div>
           <div className="social-icons">
-            <h3 className="media_head">Social media</h3>
+            <h4 className="media_head">Social media</h4>
             <ul className="footer-icons">
               <li>
                 <a href="#" target="_blank">
