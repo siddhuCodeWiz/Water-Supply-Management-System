@@ -237,7 +237,7 @@ const acceptConneciton = async (req, res) => {
 //citizen
 //request for a connection
 const addConnection = async (req, res) => {
-  const { name, address, city, pincode } = req.body;
+  const { name, address, city, pincode, latitude, longitude } = req.body;
   const can = await generateCanId();
 
   try {
@@ -248,7 +248,9 @@ const addConnection = async (req, res) => {
       address,
       city,
       pincode,
-      can // Use await here
+      can,
+      latitude,
+      longitude
     });
 
     console.log("Connection added successfully in the backend");

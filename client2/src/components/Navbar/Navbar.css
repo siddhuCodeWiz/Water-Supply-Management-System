@@ -220,7 +220,7 @@ a{
   background-color: #3c8ccb;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
   border: 1px solid #333;
-  border-radius: 4px;
+  /* border-radius: 4px; */
   padding: 8px;
   z-index: 1000;
   margin-top:1.5rem;
@@ -229,7 +229,7 @@ a{
 
 .user-info-dropdown span {
   display: flex;
-  padding: 3px;
+  /* padding: 3px; */
   font-size: large;
 }
 

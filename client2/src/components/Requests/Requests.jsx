@@ -10,7 +10,8 @@ const ReceivedConnections = () => {
         const fetchConnections = async () => {
             try {
                 const response = await axios.get('http://localhost:5001/connection/receivedconnections');
-                setConnections(response.data); // Assuming the data you need is in the 'data' property of the response
+                setConnections(response.data);
+                // alert(JSON.stringify(connections))
                 console.log("Connections fetched succesfully");
                 console.log(response.data);
             } catch (error) {

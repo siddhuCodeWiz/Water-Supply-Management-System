@@ -436,7 +436,6 @@ const NewWaterConnection = () => {
                 </div>
                 <div className='checkbox'>
                     <label className='checkbox-label'>
-                            {/* Checkbox input */}
                             <input
                             type="checkbox"
                             checked={isChecked}

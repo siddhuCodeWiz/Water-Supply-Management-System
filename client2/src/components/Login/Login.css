@@ -1,13 +1,10 @@
 .login-form{
-    width: 430px;
+    width: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 6px;
-    border-radius: 3px;
-   padding: 10%;
-   background-color: #8bb7d2;
 }
 
 .heading{
@@ -25,9 +22,74 @@
 #login-form > .login-btn{
     width: 400px;
     background-color: #207fba;
+    border-radius:6px;
 }
 
 #login-form > .login-btn:hover{
     background-color: #36a9f0;
     border-color: black;
 }
+
+.Toastify__toast-container {
+    position: fixed;
+    top: 16px;
+    right: 40%;
+    z-index: 9999;
+    width:300px;
+  }
+  
+  .Toastify__toast {
+    font-family: 'Arial', sans-serif;
+    border-radius: 4px;
+    font-size: 14px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    opacity: 0.9;
+    transition: opacity 0.5s ease-in-out;
+
+  }
+  
+  /* Styling for success notification */
+  .Toastify__toast--success {
+    background-color: #28a745;
+    color: #fff;
+    border: 1px solid #218838;
+  }
+  
+  /* Styling for error notification */
+  .Toastify__toast--error {
+    background-color: #dc3545;
+    color: #fff;
+    border: 1px solid #c82333;
+  }
+  
+  /* Animation for entering and exiting the screen */
+  @keyframes toastFadeIn {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 0.9;
+    }
+  }
+  
+  @keyframes toastFadeOut {
+    from {
+      transform: translateY(0);
+      opacity: 0.9;
+    }
+    to {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+  
+  .Toastify__toast--enter {
+    animation: toastFadeIn 0.5s ease-in-out;
+  }
+  
+  .Toastify__toast--exit {
+    animation: toastFadeOut 0.5s ease-in-out;
+  }

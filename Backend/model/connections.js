@@ -22,6 +22,16 @@ const connectionSchema = new Schema({
         type: Number,
         required: false,
         default: -1
+    },
+    latitude:{
+        type: Number,
+        required: false,
+        default: -1
+    },
+    longitude:{
+        type: Number,
+        required: false,
+        default: -1
     }
 }, {timestamps:true});
 

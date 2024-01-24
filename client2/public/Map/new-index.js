@@ -61,9 +61,12 @@ canSearch.addEventListener("click", ()=> {
   fetchdata();
   
 })
-// function goToLocation(){
-  
-// }
+
+
+const addPointcoordsByInp = document.querySelector(".add-point-by-coords button");
+addPointcoordsByInp.addEventListener("click", openpopupwithCoordsInp);
+
+
 
 // Adding the base Maps which we want from the Leaflet-Provider Plugin
 var baseMaps ={
@@ -562,6 +565,60 @@ function openpopup(latitude, longitude, type){
   })
   // alert("Infunction")
 }
+
+
+function openpopupwithCoordsInp() {
+  var number = document.getElementById("number");
+  var underjunction = document.getElementById("underjunction");
+  var heading = document.getElementById("heading");
+
+  // Create input fields for latitude and longitude
+  var latitudeInput = document.createElement("input");
+  latitudeInput.type = "text";
+  latitudeInput.id = "latitudeInput";
+  latitudeInput.placeholder = "Enter Latitude";
+
+  var longitudeInput = document.createElement("input");
+  longitudeInput.type = "text";
+  longitudeInput.id = "longitudeInput";
+  longitudeInput.placeholder = "Enter Longitude";
+
+  // Append input fields to the popup
+  var popupContent = document.getElementById("popup");
+  popupContent.appendChild(latitudeInput);
+  popupContent.appendChild(document.createElement("br"));  // Add line break for spacing
+  popupContent.appendChild(longitudeInput);
+
+  heading.innerText = "Input CAN Details";
+  popup.classList.add("open-popup");
+
+  closepopup.addEventListener("click", () => {
+      var canNumber = number.value;
+      var junctionID = underjunction.value;
+      var latitude = latitudeInput.value;
+      var longitude = longitudeInput.value;
+
+      var yesRadioButton = document.getElementById("yes");
+      var noRadioButton = document.getElementById("no");
+
+      var isWaterSupplied;
+      if (yesRadioButton.checked) {
+          isWaterSupplied = yesRadioButton.value;
+      } else if (noRadioButton.checked) {
+          isWaterSupplied = noRadioButton.value;
+      } else {
+          isWaterSupplied = "Not specified";
+      }
+
+      handlepopupvalues(canNumber, junctionID, isWaterSupplied, latitude, longitude, type);
+      popup.classList.remove("open-popup");
+
+      // Remove dynamically added input fields to reset the popup for the next use
+      popupContent.removeChild(latitudeInput);
+      popupContent.removeChild(longitudeInput);
+  });
+}
+
 
 function handlepopupvalues(number, junctionID, supplied, latitude, longitude, type){
   const sendPointDataToServer = async () => {

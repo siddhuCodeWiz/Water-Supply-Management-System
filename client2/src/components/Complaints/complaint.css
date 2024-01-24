@@ -16,7 +16,7 @@
 .complaint {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  /* gap: 4px; */
   border: 2px solid #013d58;
   border-radius: 6px;
   padding: 10px;

@@ -10,7 +10,6 @@ import { Link, Outlet } from "react-router-dom";
 
 function YourConnections(){
 
-
     const [connections, setConnections] = useState([]);
     const [cookies, setCookies] = useCookies(["access_token"]);
     const user = cookies.access_token ? jwtDecode(cookies.access_token) : null;
@@ -51,11 +50,12 @@ function YourConnections(){
             {connections.data ? (
               (
                 <div className="connection">
-                    <h3><strong>CAN Number: {connections.data.can}</strong></h3>
+                  <h3><strong>CAN Number: {connections.data.can}</strong></h3>
                   <span><strong>Name: </strong>{connections.data.name}</span>
                   <span><strong>Address: </strong>{connections.data.address}</span>
                   <span><strong>City: </strong>{connections.data.city}</span>
                   <span><strong>Pincode: </strong>{connections.data.pincode}</span>
+
                 </div>
               )
             ) : (
