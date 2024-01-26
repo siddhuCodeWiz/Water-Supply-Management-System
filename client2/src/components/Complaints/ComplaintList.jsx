@@ -121,12 +121,12 @@ const ComplaintsPage = () => {
                         <div className="complaint" key={index}>
                             <span><strong>Complaint ID: </strong>{complaint._id}</span>
                             <span><strong>User: </strong>{complaint.name}</span>
-                            <span><strong>HouseId: </strong>{complaint.houseid}</span>
+                            <span><strong>CAN ID: </strong>{complaint.canId}</span>
                             <span><strong>Email: </strong>{complaint.email}</span>
                             <span><strong>Mobile Number: </strong>{complaint.mobile}</span>
                             <span><strong>Subject: </strong>{complaint.subject}</span>
                             <span><strong>Description: </strong>{complaint.description}</span>
-                            <span><strong>Status: </strong>{complaint.resolved}</span>
+                            <span><strong>Resolved: </strong>{complaint.resolved}</span>
                         </div>
                     ))):
 

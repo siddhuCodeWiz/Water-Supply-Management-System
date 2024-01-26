@@ -1,30 +1,6 @@
 var osmMap = L.tileLayer.provider('OpenStreetMap.Mapnik');
 var streetMap = L.tileLayer.provider('Esri.WorldStreetMap');
 
-
-
-// function goToLocation() {
-//   var latitude;
-//   var longitude;
-//   const searchcan = document.getElementById("search-can")
-
-//   searchcan.addEventListener("click",()=>{
-//     var canid=document.getElementById("can-container").value
-//     alert(canid)
-
-//   })
-//   // var latitude = parseFloat(document.getElementById('latitude').value);
- 
-//   // var longitude = parseFloat(document.getElementById('longitude').value);
-  
-
-//   if (!isNaN(latitude) && !isNaN(longitude)) {
-//       map.setView([latitude, longitude], 20);
-//   } else {
-//       alert('Please enter valid latitude and longitude values.');
-//   }
-// }
-// alert("hb")
 const canSearch = document.getElementById("can-btn")
 canSearch.addEventListener("click", ()=> {
   const dat = document.getElementById("can-container").value
@@ -171,7 +147,9 @@ function displayPointsOnMap(geojsonDataForPoints) {
     })
     // alert(JSON.stringify(complaintInfo));
     await complaintInfo.forEach(element => {
-      complaintsCanIds[element.canId]=true;
+      if(element.resolved=="no"){
+        complaintsCanIds[element.canId]=true;
+      }
     })
     processjunctiondata();
     if(!response1.ok){
@@ -304,7 +282,7 @@ function displayJunctionsOnMap(geojsonData) {
   console.log(data);
 
   // Add GeoJSON layer to the map
-  const pointsLayer = L.geoJSON(data, {
+  const junctionLayer = L.geoJSON(data, {
     pointToLayer: function (feature, latlng) {
       const icon = feature.properties.icon || L.icon.default();
       const marker = L.marker(latlng, { icon: icon }).bindPopup(`<strong>Junction ID:</strong> ${feature.properties.
@@ -323,10 +301,78 @@ function displayJunctionsOnMap(geojsonData) {
   });
 
   // Add the pointsLayer to the overlayMaps control
-  overlayMaps["Points from Database"] = pointsLayer;
+  overlayMaps["Junctions from Database"] = junctionLayer;
 
   // Add the pointsLayer to the map
-  pointsLayer.addTo(map);
+  junctionLayer.addTo(map);
+
+  // Update the mapLayer control to include the new overlayMaps
+  mapLayer.remove();
+  mapLayer = L.control.layers(baseMaps, overlayMaps).addTo(map);
+}
+
+
+
+
+
+
+
+function displayTanksOnMap(geojsonData) {
+  const data = [];
+  var formattedFeature;
+  geojsonData["tankData"].forEach(element => {
+    const tankId = element && element.properties && element.properties.
+    tankId;
+
+    formattedFeature = {
+      "type": "Feature",
+      "geometry": {
+        "type": element.type,
+        "coordinates": element && element.coordinates
+      },
+      "properties": {
+        "unique_id": tankId || "No Junction Name",
+        "tank_capacity": element.properties.tank_capacity,
+        "tank_material": element.properties.tank_material,
+        "tank_dimensions": element.properties.tank_dimensions,
+        "tank_condition": element.properties.tank_condition,
+        "tank_color": element.properties.tank_color,
+        "icon": L.icon({
+          iconUrl: "./over-head-water-tank.png",
+          iconSize: [45, 45],
+          iconAnchor: [16, 16],
+        }),
+      }
+    };
+    data.push(formattedFeature);
+  });
+
+  console.log(data);
+
+  // Add GeoJSON layer to the map
+  const tanksLayer = L.geoJSON(data, {
+    pointToLayer: function (feature, latlng) {
+      const icon = feature.properties.icon || L.icon.default();
+      const marker = L.marker(latlng, { icon: icon }).bindPopup(`<strong>Tank Id:</strong> ${feature.properties.
+        unique_id}<br>` +
+        `<strong>Tank Capacity:</strong> ${feature.properties.tank_capacity}L<br>`+`<strong>Tank Material:</strong> ${feature.properties.tank_material}<br>`+`<strong>Tank Dimensions:</strong> ${feature.properties.tank_dimensions}<br>`+`<strong>Tank Condition:</strong> ${feature.properties.tank_condition}<br>`+`<strong>Tank Color:</strong> ${feature.properties.tank_color}<br>`);
+
+      // Add double-click event listener to each marker
+      marker.on('dblclick', function () {
+        // Remove the clicked marker from the tanksLayer
+        tanksLayer.removeLayer(marker);
+        alert(marker);
+      });
+
+      return marker;
+    }
+  });
+
+  // Add the tanksLayer to the overlayMaps control
+  overlayMaps["Tanks from Database"] = tanksLayer;
+
+  // Add the tanksLayer to the map
+  tanksLayer.addTo(map);
 
   // Update the mapLayer control to include the new overlayMaps
   mapLayer.remove();
@@ -490,6 +536,27 @@ try {
   console.log(`Error fetching GeoJSON data: ${error}`);
 }
 
+
+try {
+  const response = await fetch(`http://localhost:5001/api/gettankdata`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if(!response.ok){
+    console.log(`HTTP error! Status: ${response.status}`);
+  }
+
+  const tankdata = await response.json();
+  console.log(tankdata);
+  displayTanksOnMap(tankdata);
+
+} catch (error) {
+  console.log(`Error fetching GeoJSON data: ${error}`);
+}
+
 // ***********************************************************************
 
 
@@ -527,8 +594,6 @@ const getrole=window.localStorage.getItem("role")
 // Retrieving the above drawn data
 
 function openpopup(latitude, longitude, type){
-  // alert("hi")
-  // var numberValue = document.getElementById("number").value;
   var number = document.getElementById("number");
   var canidnumber = document.getElementById("canidnumber");
   var underjunction = document.getElementById("underjunction");
@@ -537,12 +602,34 @@ function openpopup(latitude, longitude, type){
     heading.innerText = "Input Junction Details";
     canidnumber.innerText="Enter Junction ID: ";
     underjunction.disabled=true;
+    popup.classList.add("open-popup");
+    
   }
+
+  else if(type=="tank"){
+
+    popupTank.classList.add("open-popup-tank");
+
+    closepopup2.addEventListener("click",() => {
+      var tankId = document.getElementById("tankId");
+      var tankCapacity = document.getElementById("tankCapacity");
+      var tankMaterial = document.getElementById("tankMaterial");
+      var tankDimensions = document.getElementById("tankDimensions");
+      var tankCondition = document.getElementById("tankCondition");
+      var tankColor = document.getElementById("tankColor");
+
+      handlepopupvaluesfortanks(tankId.value, tankCapacity.value, tankMaterial.value, tankDimensions.value, tankCondition.value, tankColor.value, latitude, longitude, type)
+      popupTank.classList.remove("open-popup-tank")
+    })
+    location.reload;
+    return;
+  }
+
   else{
     heading.innerText = "Input CAN Details";
     canidnumber.innerText="Enter CAN Number: ";
+    popup.classList.add("open-popup");
   }
-  popup.classList.add("open-popup");
   // closepopup = document.getElementById("closepopup");
   closepopup.addEventListener("click", ()=> {
     var canNumber = number.value;
@@ -566,25 +653,25 @@ function openpopup(latitude, longitude, type){
   // alert("Infunction")
 }
 
-
-function openpopupwithCoordsInp() {
+async function openpopupwithCoordsInp() {
   var number = document.getElementById("number");
   var underjunction = document.getElementById("underjunction");
   var heading = document.getElementById("heading");
+
+  var popupContent = document.getElementById("popup");
 
   // Create input fields for latitude and longitude
   var latitudeInput = document.createElement("input");
   latitudeInput.type = "text";
   latitudeInput.id = "latitudeInput";
-  latitudeInput.placeholder = "Enter Latitude";
+  latitudeInput.placeholder = "Latitude";
 
   var longitudeInput = document.createElement("input");
   longitudeInput.type = "text";
   longitudeInput.id = "longitudeInput";
-  longitudeInput.placeholder = "Enter Longitude";
+  longitudeInput.placeholder = "Longitude";
 
-  // Append input fields to the popup
-  var popupContent = document.getElementById("popup");
+  // Append latitude and longitude input fields to the popup
   popupContent.appendChild(latitudeInput);
   popupContent.appendChild(document.createElement("br"));  // Add line break for spacing
   popupContent.appendChild(longitudeInput);
@@ -592,33 +679,91 @@ function openpopupwithCoordsInp() {
   heading.innerText = "Input CAN Details";
   popup.classList.add("open-popup");
 
+  var typingTimer;
+
+  // Add event listener to the CAN number input field
+  number.addEventListener("input", async () => {
+
+    clearTimeout(typingTimer);
+
+    typingTimer = setTimeout(async () => {
+
+    
+    var canNumber = number.value;
+
+    try {
+      // Fetch data based on CAN ID
+      const response = await fetch(`http://localhost:5001/connection/searchrconnectionsbycan/${canNumber}`);
+      const data = await response.json();
+      
+      // alert(JSON.stringify(data[0]));
+      
+      // Update latitude and longitude input fields with fetched data
+      var latitudeInput = document.getElementById("latitudeInput");
+      var longitudeInput = document.getElementById("longitudeInput");
+      latitudeInput.value = data[0].latitude;
+      longitudeInput.value = data[0].longitude;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }, 2000);
+  });
+
   closepopup.addEventListener("click", () => {
-      var canNumber = number.value;
-      var junctionID = underjunction.value;
-      var latitude = latitudeInput.value;
-      var longitude = longitudeInput.value;
+    var canNumber = number.value;
+    var junctionID = underjunction.value;
+    var latitude = latitudeInput.value;
+    var longitude = longitudeInput.value;
 
-      var yesRadioButton = document.getElementById("yes");
-      var noRadioButton = document.getElementById("no");
+    var yesRadioButton = document.getElementById("yes");
+    var noRadioButton = document.getElementById("no");
 
-      var isWaterSupplied;
-      if (yesRadioButton.checked) {
-          isWaterSupplied = yesRadioButton.value;
-      } else if (noRadioButton.checked) {
-          isWaterSupplied = noRadioButton.value;
-      } else {
-          isWaterSupplied = "Not specified";
-      }
-
-      handlepopupvalues(canNumber, junctionID, isWaterSupplied, latitude, longitude, type);
-      popup.classList.remove("open-popup");
-
-      // Remove dynamically added input fields to reset the popup for the next use
-      popupContent.removeChild(latitudeInput);
-      popupContent.removeChild(longitudeInput);
+    var isWaterSupplied;
+    if (yesRadioButton.checked) {
+      isWaterSupplied = yesRadioButton.value;
+    } else if (noRadioButton.checked) {
+      isWaterSupplied = noRadioButton.value;
+    } else {
+      isWaterSupplied = "Not specified";
+    }
+    
+    handlepopupvalues(canNumber, junctionID, isWaterSupplied, latitude, longitude, 'home');
+    popup.classList.remove("open-popup");
   });
 }
 
+async function handlepopupvaluesfortanks(tankId, tankCapacity, tankMaterial, tankDimensions, tankCondition, tankColor, latitude, longitude){
+  const sendTankDataToServer = async () => {
+    const dataToSend = {
+      "type": "Point",
+      "coordinates": [longitude, latitude],
+      "properties":{
+        "tankId":tankId,
+        "tank_capacity":tankCapacity,
+        "tank_material":tankMaterial,
+        "tank_dimensions":tankDimensions,
+        "tank_condition":tankCondition,
+        "tank_color":tankColor,
+      }
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/addTank`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+      });
+
+      const responseData = await response.json();
+      console.log(`Point data sucessfully sent to server: ${responseData}`);
+    } catch (error) {
+      console.log(`Error in sending data: ${error}`);
+    }
+  }
+  sendTankDataToServer();
+}
 
 function handlepopupvalues(number, junctionID, supplied, latitude, longitude, type){
   const sendPointDataToServer = async () => {
@@ -777,24 +922,31 @@ var shapeData = layer.toGeoJSON();
 // Store or process the shapeData as needed
 var coordinates;
 // Check if it's a Point geometry (Marker)
-if (shapeData.geometry.type === 'Point') {
-  coordinates = shapeData.geometry.coordinates;
-  var latitude = coordinates[1];
-  var longitude = coordinates[0];
+  if (shapeData.geometry.type === 'Point') {
+    const coordinates = shapeData.geometry.coordinates;
+    const latitude = coordinates[1];
+    const longitude = coordinates[0];
 
-  if(layer instanceof L.CircleMarker){
-    alert("It is a circle marker!");
-    openpopup(latitude, longitude, "junction");
+    if (layer instanceof L.CircleMarker) {
+      // Prompt the user to specify the type
+      const markerType = prompt("Is it for a junction or an overhead water tank? Enter 'junction' or 'tank'");
+      
+      // Open popup based on the user's input
+      if (markerType && markerType.trim().toLowerCase() === 'junction') {
+        openpopup(latitude, longitude, "junction");
+      } else if (markerType && markerType.trim().toLowerCase() === 'tank') {
+        openpopup(latitude, longitude, "tank");
+      } else {
+        alert("Invalid input! Please enter 'junction' or 'tank'.");
+      }
+    } else {
+      openpopup(latitude, longitude, "home");
+    }
   }
-  else{
-    openpopup(latitude, longitude, "home");
-  }
-  }
+
 
   else if (shapeData.geometry.type === 'LineString') {
     coordinates = shapeData.geometry.coordinates;
-    // alert(coordinates);
-    // latlan(coordinates);
     let arr = [];
     // Loop through the coordinates array for each point in the line
     for (var i = 0; i < coordinates.length; i++) {

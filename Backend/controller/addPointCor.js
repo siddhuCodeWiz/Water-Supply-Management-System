@@ -1,5 +1,6 @@
 const {pointModel, junctionModel} = require('../model/pointsSchema');
 const lineModel = require('../model/lineSchema');
+const tankModel = require('../model/tanksShema');
 
 const addPoint = async (req, res) => {
     const {type, coordinates, properties} = req.body;
@@ -204,4 +205,46 @@ const getDataByCanID = async(req,res)=>{
     }
 }
 
-module.exports = {addPoint, getData, addLine, getlinedata, addJunction, getJunctionData, getJunctionDataByID, getDataByCanID};
+const addTank = async (req, res) => {
+    const {type, coordinates, properties} = req.body;
+    console.log(type, coordinates, properties);
+
+    try {
+        if(!type || !Array.isArray(coordinates) || coordinates.length !== 2){
+            return res.status(400).json({
+                success: false,
+                messaage: "Point coordinates not saved! Please try again"
+            })
+        }
+
+        const pointInfo = tankModel(req.body);
+        const result = await pointInfo.save();
+
+        return res.status(200).json({
+            success: true,
+            message: `Tank data added sucessfully: ${result}`
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success:false,
+            message: `Error occured: ${error}`
+        });
+    }
+}
+
+const getTankData = async (req, res) => {
+    try {
+        const tankData = await tankModel.find({});
+        console.log(tankData);
+        res.status(200).json({
+            tankData
+        })
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: "Failed to get Tanks data."
+        })
+    }
+};
+
+module.exports = {addPoint, getData, addLine, getlinedata, addJunction, getJunctionData, getJunctionDataByID, getDataByCanID, addTank, getTankData};

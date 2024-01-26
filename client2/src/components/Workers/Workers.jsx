@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './Workers.css';
 
 const AddWorker = () => {
@@ -7,6 +8,7 @@ const AddWorker = () => {
     name: '',
     phoneNumber: '',
     email: '',
+    city: '',
     password: '',
     confirmPassword: '',
   });
@@ -15,15 +17,27 @@ const AddWorker = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match. Please re-enter.");
       return;
     }
-
-    console.log(formData);
+  
+    try {
+      alert(JSON.stringify(formData))
+      const result = await axios.post('http://localhost:5001/workers/addworker', {
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        city: formData.city,
+        password: formData.password,
+      });
+      console.log(result.data); // Assuming the server responds with data
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -58,6 +72,19 @@ const AddWorker = () => {
                 />
                 <label htmlFor="">Phone number</label>
                 </div>
+
+                <div className="work_inp">
+                <input
+                  type="text"
+                  name="city"
+                  // placeholder="Name"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="input-field"
+                />
+                <label htmlFor="">City</label>
+                </div>
+
                 <div className="work_inp">
                 <input
                   type="email"

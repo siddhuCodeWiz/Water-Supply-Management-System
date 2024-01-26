@@ -1,160 +1,6 @@
-// const ConnectionModel = require('../model/connections');
-// // const { connections } = require('mongoose');
-// const acceptedConnectionsModel = require('../model/AcceptedConnections');
-
-
-
-// //admin
-// const generateCanId = async () => {
-//   const min = 10000000;
-//   const max = 99999999;
-
-//   let isUnique = false;
-//   let randomNumber;
-
-//   while (!isUnique) {
-//     randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-
-//     // Check if the number is unique in the database
-//     const existingConnection = await ConnectionModel.findOne({ can: randomNumber });
-
-//     isUnique = !existingConnection;
-//   }
-
-//   return randomNumber;
-// };
-
-
-// //Admin
-
-// //fetching all received connections
-// const receivedConnections  = async(req,res) =>{
-
-//   try{
-//     console.log("Trying to fetch connections")
-//     const Received = await ConnectionModel.find({}) ;
-//     res.status(200).json(Received);
-//   }
-//   catch(error){
-//     console.log("Error while fetching received connections")
-//     res.status(400).json({error: json.error})
-//   }
-
-// }
-
-// //admin accepting connection
-// const acceptConneciton = async (req, res) => {
-//   const { id } = req.params;
-
-//   try {
-//     const accepted = await ConnectionModel.findOneAndDelete({ _id: id });
-
-//     if (!accepted) {
-//       return res.status(400).json({ error: "No such connection request received" });
-//     }
-
-//     const { name, address, city, pincode, can } = accepted;
-
-//     try {
-//       const response = await acceptedConnectionsModel.create({
-//         name,
-//         address,
-//         city,
-//         pincode,
-//         can
-//       });
-
-//       console.log("Connection accepted");
-//       res.status(200).json(response);
-//     } catch (error) {
-//       console.log("Error while transferring connection to accepted database");
-//       res.status(400).json({ error: error.message });
-//     }
-//   } catch (error) {
-//     console.log("Error while trying to delete in the backend");
-//     res.status(400).json({ error: error.message });
-//   }
-// };
-
-
-
-
-
-
-
-// //citizen
-// //request for a connection
-// const addConnection = async (req, res) => {
-//   const { name, address, city, pincode } = req.body;
-//   const can = await generateCanId();
-
-//   try {
-    
-//     console.log("Trying to add connection in backend");
-//     const connection = await ConnectionModel.create({
-//       name,
-//       address,
-//       city,
-//       pincode,
-//       can // Use await here
-//     });
-
-//     console.log("Connection added successfully in the backend");
-
-//     return res.status(200).json({
-//       success: true,
-//       message: connection,
-//     });
-//   } catch (error) {
-//     console.error('Error while adding connection:', error);
-
-//     res.status(400).json({
-//       success: false,
-//       message:` Connection not saved: ${error.message}`,
-//     });
-//   }
-// };
-
-
-// //fetching citzens accepted connections
-// const searchConnection = async (req, res) => {
-//     const { name } = req.params;
-
-//     try {
-        
-//         const result = await acceptedConnectionsModel.findOne({name: name});
-
-//         if (result.length === 0) {
-//             return res.status(201).json({
-//             success: false,
-//             message: "No connections found for user",
-//             data:result,
-//             });
-//         } 
-//             // Handle the case where 'result' is found
-//           res.status(200).json({
-//             success: true,
-//             message: "Connections found for user",
-//             data: result,
-//             });
-        
-//         } catch (error) {
-//         // console.error('Error finding connections:', error);
-//         res.status(500).json({
-//             success: false,
-//             message: "Internal Server Error",
-//         });
-//     }
-//   }
-// module.exports = { addConnection, searchConnection, receivedConnections, acceptConneciton};
-
-
-
 const ConnectionModel = require('../model/connections');
 // const { connections } = require('mongoose');
 const acceptedConnectionsModel = require('../model/AcceptedConnections');
-
-
 
 //admin
 const generateCanId = async () => {
@@ -190,6 +36,21 @@ const receivedConnections  = async(req,res) =>{
   catch(error){
     console.log("Error while fetching received connections")
     res.status(400).json({error: json.error})
+  }
+
+}
+
+
+const searchReceivedConnectionsByCAN  = async(req,res) =>{
+  const {can} = req.params;
+  try{
+    console.log("Trying to fetch connections")
+    const Received = await ConnectionModel.find({can:can}) ;
+    res.status(200).json(Received);
+  }
+  catch(error){
+    console.log("Error while fetching received connections")
+    res.status(400).json(`Error: ${error}`)
   }
 
 }
@@ -321,4 +182,4 @@ const AcceptedConnectionsList = async(req,res) => {
 
 
 
-module.exports = { addConnection, searchConnection, receivedConnections, acceptConneciton, AcceptedConnectionsList};
+module.exports = { addConnection, searchConnection, receivedConnections, acceptConneciton, AcceptedConnectionsList, searchReceivedConnectionsByCAN};

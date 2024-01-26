@@ -35,10 +35,39 @@
             font-style:oblique;
         }
 
+        .popupTank {
+            width: 300px;
+            background: #a9d8f7;
+            border-radius: 30px;
+            border: 2px solid black;
+            /* border: 2px #52bf97; */
+            position: absolute;
+            top: 0;
+            right: 64%;
+            transform: translate(-50%, -50%) scale(0.1);
+            text-align: start;
+            padding: 0 20px 20px;
+            color: #333;
+            visibility: hidden;
+            transition: transform 0.4s, top 0.4s;
+            font-style:oblique;
+            display: flex;
+            flex-direction: column;
+            font-size: larger;
+        }
+
         .open-popup {
             visibility: visible;
             top: 15%;
             margin-top: 90px;
+            transform: translate(-50%, -50%) scale(1);
+            z-index: 1;
+        }
+
+        .open-popup-tank {
+            visibility: visible;
+            top:65%;
+            /* margin-top: 180px; */
             transform: translate(-50%, -50%) scale(1);
             z-index: 1;
         }
@@ -72,6 +101,10 @@
             font-size: medium;
             font-weight: bold;
         }
+        #right {
+            margin-bottom: 15px;
+            margin-left:1200px;
+        }
     </style>
 
     <link rel="stylesheet" href="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
@@ -88,7 +121,10 @@
     <input id='can-container' type="search"/>
     <button id="can-btn" onclick= "goToLocation()">Search</button>
     </div>
-
+    <div id="right" >
+        <button id="other-tab" onclick="openInOtherTab()">Open in other tab</button>
+        <button id="close-tab" onclick="closeOpenedTab()">Close opened tab</button>
+    </div>
     <div class="add-point-by-coords">
         <button>Add point by coordinates</button>
     </div>
@@ -115,6 +151,41 @@
             <br>
             <button id="closepopup" onclick="closepopup">Submit</button>
         </div>
+        
+    </div>
+
+    <div id="container2" class="container2">
+        <div id="popupTank" class="popupTank">
+            <h2 id="heading">Input Tank Details</h2>
+            <label for="tankId">Tank Id:</label>
+            <input type="text" id="tankId" placeholder="Enter tank ID">
+            <br>
+            <label for="tankCapacity">Tank Capacity (liters):</label>
+            <input type="number" id="tankCapacity" placeholder="Enter tank capacity">
+            <br>
+            <label for="tankMaterial">Tank Material:</label>
+            <select id="tankMaterial">
+                <option value="concrete">Concrete</option>
+                <option value="steel">Steel</option>
+                <option value="plastic">Plastic</option>
+            </select>
+            <br>
+            <label for="tankDimensions">Tank Dimensions:</label>
+            <input type="text" id="tankDimensions" placeholder="Enter tank dimensions">
+            <br>
+            <label for="tankCondition">Tank Condition:</label>
+            <select id="tankCondition">
+                <option value="new">New</option>
+                <option value="used">Used</option>
+                <option value="operational">Operational</option>
+                <option value="non-operational">Non-operational</option>
+            </select>
+            <br>
+            <label for="tankColor">Tank Color:</label>
+            <input type="color" id="tankColor" value="#000000">
+            <br>
+            <button id="closepopup2" onclick="closepopup2">Submit</button>
+        </div>
     </div>
 
 
@@ -132,8 +203,21 @@
     <script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
 
     <script type="module" src="./new-index.js"></script>
+    <script>
+        let openedWindow;
+        function openInOtherTab() {
+            const other = '../Map/index2.html';
+            openedWindow = window.open(other, 'w1');
+            let cs = document.getElementById("close-tab");
+            cs.display="flex";
+            // alert("hi");
+        }
 
-
+        function closeOpenedTab() {
+            // window.location.href = "http://localhost:3000/maps";
+            window.close();
+        }
+       </script>
 </body>
 
 </html>
